@@ -155,6 +155,25 @@ export const GasService = {
     return await this.postToGas(payload);
   },
 
+  async submitSapEvidence(huInbOut, photoObjects) {
+    const filesArray = photoObjects.map(p => ({
+      file: p.base64,
+      filename: p.filename
+    }));
+
+    const firstPhoto = photoObjects[0];
+
+    const payload = {
+      action: "SUBMIT_SAP_EVIDENCE",
+      huInbOut: huInbOut,
+      file: firstPhoto ? firstPhoto.base64 : "",
+      filename: firstPhoto ? firstPhoto.filename : "",
+      files: filesArray
+    };
+
+    return await this.postToGas(payload);
+  },
+
   async exportAuditReport(pic, jobDescription, items) {
     const payload = {
       action: "EXPORT_AUDIT",

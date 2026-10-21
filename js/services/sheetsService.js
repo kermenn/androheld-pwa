@@ -195,5 +195,33 @@ export const SheetsService = {
     }
 
     return pns;
+  },
+
+  async fetchSapEvidence() {
+    const rawCsv = await this.fetchCsvWithFallback(CONFIG.SHEETS.SAP_EVIDENCE);
+    const lines = rawCsv.split(/\r?\n/).filter(line => line.trim().length > 0);
+    const records = [];
+
+    for (const line of lines) {
+      const parts = this.parseCsvLine(line);
+      if (parts.length >= 2) {
+        const timestamp = (parts[0] || "").replace(/"/g, "").trim();
+        const huInbOut = (parts[1] || "").replace(/"/g, "").trim();
+        const photoUrl = (parts[2] || "").replace(/"/g, "").trim();
+
+        if (timestamp.toUpperCase() === "TIMESTAMP" || huInbOut.toUpperCase() === "HU/INB/OUT" || huInbOut.toUpperCase() === "HU") {
+          continue;
+        }
+
+        records.push({
+          timestamp: timestamp,
+          huInbOut: huInbOut,
+          photoUrl: photoUrl
+        });
+      }
+    }
+
+    return records.reverse(); // newest records first
   }
 };
+

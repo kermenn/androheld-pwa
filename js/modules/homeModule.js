@@ -24,11 +24,7 @@ export const HomeModule = {
 
     if (cardMainTools) {
       cardMainTools.addEventListener('click', () => {
-        // Open SAP WebGUI directly in new tab on mobile / desktop
-        const sapUrl = "https://erp.trakindo.co.id/SAP/BC/GUI/SAP/ITS/zimm_lmob?sap-client=300&sap-language=EN";
-        if (confirm("Buka SAP WebGUI di tab browser baru?")) {
-          window.open(sapUrl, '_blank');
-        }
+        this.onNavigate('main-tools');
       });
     }
 

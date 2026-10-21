@@ -10,6 +10,9 @@ export const CONFIG = {
   SUPABASE_URL: "https://culgtxrkcdkkcsemocym.supabase.co",
   SUPABASE_KEY: atob("c2Jfc2VjcmV0X2lPbWs0THdyOWg3TXlES19sMVpQSXdfTXRHX2djRnQ="),
 
+  // SAP WebGUI URL
+  SAP_URL: "https://erp.trakindo.co.id/SAP/BC/GUI/SAP/ITS/zimm_lmob?sap-client=300&sap-language=EN",
+
   // Cloudflare Proxy & Google Apps Script
   CLOUDFLARE_PROXY_URL: "https://androheld-proxy.uchiuchul31.workers.dev",
   UPLOAD_URL: "https://script.google.com/macros/s/AKfycbzWSBeDkRdZrnyiHnqEr7aIyQzcE6b9dergCWHXqQPcZCaSlmEpdL8HUYP6TWnQ9nCYrA/exec",
@@ -21,7 +24,8 @@ export const CONFIG = {
     WIP: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQG-jFIm9_1URcm1uOZkIC1Wzch0-K7yopV4pcyW5dXUCK6lj-eiVR8KLPtFnVZxqaGmy50AQFlY2d7/pub?gid=1325688518&single=true&output=csv",
     WIP_IN: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQG-jFIm9_1URcm1uOZkIC1Wzch0-K7yopV4pcyW5dXUCK6lj-eiVR8KLPtFnVZxqaGmy50AQFlY2d7/pub?gid=499203772&single=true&output=csv",
     QC_HOSE: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqggf4LgOWjeLELoaVkEvDcWnJ7vBocrtVTaUq6OEJnZl7xBvGLu-36X7tbq1Q6CT9gN7D29cF9Itz/pub?gid=1482956216&single=true&output=csv",
-    ROUTE: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTFBLyNUra_J2RR-Y8yagbKqHg85QsimOU4veCOFmtLF4-57AgLouw-9MW06GMfbFIUUcLnqsupIvU2/pub?gid=865622419&single=true&output=csv"
+    ROUTE: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTFBLyNUra_J2RR-Y8yagbKqHg85QsimOU4veCOFmtLF4-57AgLouw-9MW06GMfbFIUUcLnqsupIvU2/pub?gid=865622419&single=true&output=csv",
+    SAP_EVIDENCE: "https://docs.google.com/spreadsheets/d/e/2PACX-1vT7KtUvwl3R6JpLfVdWC67uhkfHFi6PNW4Ym-gqLV8SV0lSJ6Br1fcurywscFvA3Iyz4oinV1z7UzOV/pub?gid=0&single=true&output=csv"
   },
 
   // Fallback demo summary (used only on first install before sync)

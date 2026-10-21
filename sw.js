@@ -1,4 +1,4 @@
-const CACHE_NAME = 'androheld-pwa-v6';
+const CACHE_NAME = 'androheld-pwa-v7';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -15,6 +15,7 @@ const ASSETS_TO_CACHE = [
   './js/services/scannerService.js',
   './js/modules/pinModule.js',
   './js/modules/homeModule.js',
+  './js/modules/mainToolsModule.js',
   './js/modules/inventoryModule.js',
   './js/modules/wipModule.js',
   './js/modules/qcHoseModule.js',

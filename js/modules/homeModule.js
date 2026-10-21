@@ -1,0 +1,69 @@
+/* ==========================================================================
+   Home Screen Bento Grid Module (Mirroring HomeScreen.kt)
+   ========================================================================== */
+
+export const HomeModule = {
+  init(onNavigate) {
+    this.onNavigate = onNavigate;
+    this.bindEvents();
+  },
+
+  bindEvents() {
+    const cardMainTools = document.getElementById('card-main-tools');
+    const cardRouteStock = document.getElementById('card-route-stock');
+    const cardWipTools = document.getElementById('card-wip-tools');
+    const cardQcHose = document.getElementById('card-qc-hose');
+    const cardInventory = document.getElementById('card-inventory-report');
+    const cardBattery = document.getElementById('card-battery-supply');
+
+    if (cardInventory) {
+      cardInventory.addEventListener('click', () => {
+        this.onNavigate('inventory');
+      });
+    }
+
+    if (cardMainTools) {
+      cardMainTools.addEventListener('click', () => {
+        // Open SAP WebGUI directly in new tab on mobile / desktop
+        const sapUrl = "https://erp.trakindo.co.id/SAP/BC/GUI/SAP/ITS/zimm_lmob?sap-client=300&sap-language=EN";
+        if (confirm("Buka SAP WebGUI di tab browser baru?")) {
+          window.open(sapUrl, '_blank');
+        }
+      });
+    }
+
+    if (cardRouteStock) {
+      cardRouteStock.addEventListener('click', () => {
+        this.onNavigate('stock');
+      });
+    }
+
+    if (cardWipTools) {
+      cardWipTools.addEventListener('click', () => {
+        this.onNavigate('wip');
+      });
+    }
+
+    if (cardQcHose) {
+      cardQcHose.addEventListener('click', () => {
+        this.onNavigate('qc');
+      });
+    }
+
+    if (cardBattery) {
+      cardBattery.addEventListener('click', () => {
+        this.showToast("Modul Battery Form Supply masih terkunci.");
+      });
+    }
+  },
+
+  showToast(msg) {
+    const toast = document.getElementById('global-toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2800);
+  }
+};

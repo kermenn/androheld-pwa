@@ -1,0 +1,24 @@
+{
+  "name": "AndroHeld Enterprise",
+  "short_name": "AndroHeld",
+  "description": "AndroHeld Enterprise Mobile & Inventory Hub",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0F0F12",
+  "theme_color": "#0F0F12",
+  "icons": [
+    {
+      "src": "./assets/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

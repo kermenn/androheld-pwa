@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0F0F12">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AndroHeld">
+  <title>AndroHeld Enterprise Mobile</title>
+
+  <!-- PWA Manifest & Icons -->
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./assets/icon.png">
+  <link rel="icon" type="image/png" href="./assets/icon.png">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="./css/tokens.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/app.css">
+
+  <!-- Offline Camera Barcode & QR Scanner Library -->
+  <script src="./js/lib/html5-qrcode.min.js"></script>
+</head>
+<body>
+
+  <div id="app-root">
+
+    <!-- ========================================== -->
+    <!-- SCREEN 0: SECURITY PIN LOCK SCREEN         -->
+    <!-- ========================================== -->
+    <section id="screen-pin" class="view-screen active">
+      <div class="pin-screen-layout">
+        <!-- Brand Header -->
+        <div class="pin-brand-wrap">
+          <img src="./assets/logo.png" alt="AndroHeld Logo" class="pin-brand-logo">
+          <div class="pin-brand-subtitle">TRANSFORMATION TO DIGITAL</div>
+          <div class="pin-prompt-title">Masukkan PIN Keamanan</div>
+          <div id="pin-error-msg" class="pin-error-text"></div>
+          <div id="pin-lockout-banner" class="pin-lockout-banner">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span id="pin-lockout-timer">Terkunci</span>
+          </div>
+        </div>
+
+        <!-- 4 Dot Indicators -->
+        <div id="pin-dots-container" class="pin-dots-row">
+          <div class="pin-dot"></div>
+          <div class="pin-dot"></div>
+          <div class="pin-dot"></div>
+          <div class="pin-dot"></div>
+        </div>
+
+        <!-- Numeric Keypad Grid -->
+        <div id="pin-keypad-grid" class="pin-keypad-grid">
+          <button class="pin-key" data-key="1">1</button>
+          <button class="pin-key" data-key="2">2</button>
+          <button class="pin-key" data-key="3">3</button>
+
+          <button class="pin-key" data-key="4">4</button>
+          <button class="pin-key" data-key="5">5</button>
+          <button class="pin-key" data-key="6">6</button>
+
+          <button class="pin-key" data-key="7">7</button>
+          <button class="pin-key" data-key="8">8</button>
+          <button class="pin-key" data-key="9">9</button>
+
+          <div class="pin-key blank-key"></div>
+          <button class="pin-key" data-key="0">0</button>
+          <button class="pin-key del-key" data-key="DEL" title="Hapus">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 1: HOME SCREEN (BENTO GRID)         -->
+    <!-- ========================================== -->
+    <section id="screen-home" class="view-screen">
+      <div class="home-wallpaper-container">
+        <div class="home-wallpaper-overlay"></div>
+
+        <div class="home-content-wrap">
+          <!-- Top Bar with Quick Lock & Settings -->
+          <div style="width: 100%; display: flex; justify-content: flex-end; gap: 8px;">
+            <button id="btn-quick-lock" class="icon-btn" title="Kunci Aplikasi">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </button>
+            <button id="btn-home-settings" class="icon-btn" title="Pengaturan Global">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            </button>
+          </div>
+
+          <!-- Brand Logo Header -->
+          <div class="home-header">
+            <img src="./assets/logo.png" alt="AndroHeld Logo" class="brand-logo-img">
+            <div class="brand-subtitle">TRANSFORMATION TO DIGITAL</div>
+          </div>
+
+          <!-- Bento Grid Menu (2 Columns) -->
+          <div class="bento-grid">
+            <!-- Row 1: Main Tools & Route Stock -->
+            <div id="card-main-tools" class="bento-card" style="--card-accent: var(--accent-primary);">
+              <div class="bento-card-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              </div>
+              <div>
+                <div class="bento-card-title">MAIN TOOLS</div>
+                <div class="bento-card-subtitle">SAP WebGUI & Scanner</div>
+              </div>
+            </div>
+
+            <div id="card-route-stock" class="bento-card" style="--card-accent: var(--accent-cyan);">
+              <div class="bento-card-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+              </div>
+              <div>
+                <div class="bento-card-title">ROUTE & STOCK</div>
+                <div class="bento-card-subtitle">Stock Opname & Caching</div>
+              </div>
+            </div>
+
+            <!-- Row 2: WIP Tools & QC Hose -->
+            <div id="card-wip-tools" class="bento-card" style="--card-accent: var(--accent-orange);">
+              <div class="bento-card-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+              </div>
+              <div>
+                <div class="bento-card-title">WIP TOOLS</div>
+                <div class="bento-card-subtitle">Part In & Out Tracker</div>
+              </div>
+            </div>
+
+            <div id="card-qc-hose" class="bento-card" style="--card-accent: var(--accent-green);">
+              <div class="bento-card-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              </div>
+              <div>
+                <div class="bento-card-title">QC HOSE ASSY</div>
+                <div class="bento-card-subtitle">5-Point Inspection</div>
+              </div>
+            </div>
+
+            <!-- Row 3: Inventory Report & Battery Supply -->
+            <div id="card-inventory-report" class="bento-card" style="--card-accent: var(--accent-purple);">
+              <div class="bento-card-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              </div>
+              <div>
+                <div class="bento-card-title">INVENTORY REPORT</div>
+                <div class="bento-card-subtitle">Posture & WO Readiness</div>
+              </div>
+            </div>
+
+            <div id="card-battery-supply" class="bento-card locked" style="--card-accent: var(--accent-locked);">
+              <div class="bento-card-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              </div>
+              <div>
+                <div class="bento-card-title">BATTERY SUPPLY</div>
+                <div class="bento-card-subtitle">Battery Form Supply</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer App Version -->
+        <div class="home-footer-info">
+          <div class="home-version-text">AndroHeld v5.0.0 (Web / PWA)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 2: INVENTORY REPORT SCREEN          -->
+    <!-- ========================================== -->
+    <section id="screen-inventory" class="view-screen">
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <button id="btn-inventory-back" class="icon-btn" title="Kembali ke Menu Utama">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </button>
+        <div class="top-bar-title">INVENTORY REPORT</div>
+        <div style="display: flex; gap: 4px;">
+          <button id="btn-inventory-sync" class="icon-btn" title="Sinkronisasi Cloud">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          </button>
+          <button id="btn-inventory-settings" class="icon-btn" title="Status Cache">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Scrollable Content -->
+      <div class="screen-scroll-body">
+        
+        <!-- 1. Posture Stock Health & Risk Profile -->
+        <div class="section-header">
+          <span class="section-title">POSTURE REPORT (STOCK RISK PROFILE)</span>
+          <span class="section-tag">Plant 1346 Clean</span>
+        </div>
+
+        <div class="posture-grid">
+          <!-- Card 1: Health -->
+          <div class="posture-card" style="--card-accent: var(--accent-green);">
+            <div class="posture-title">Health</div>
+            <div id="kpi-health-pct" class="posture-percent">37.1%</div>
+            <div id="kpi-health-val" class="posture-val">$1.37M</div>
+          </div>
+          <!-- Card 2: Excess -->
+          <div class="posture-card" style="--card-accent: var(--accent-yellow);">
+            <div class="posture-title">Excess</div>
+            <div id="kpi-excess-pct" class="posture-percent">46.8%</div>
+            <div id="kpi-excess-val" class="posture-val">$1.73M</div>
+          </div>
+          <!-- Card 3: Deadstock -->
+          <div class="posture-card" style="--card-accent: var(--accent-deadstock);">
+            <div class="posture-title">Deadstock</div>
+            <div id="kpi-deadstock-pct" class="posture-percent">8.8%</div>
+            <div id="kpi-deadstock-val" class="posture-val">$326K</div>
+          </div>
+          <!-- Card 4: Obsolete -->
+          <div class="posture-card" style="--card-accent: var(--accent-red);">
+            <div class="posture-title">Obsolete</div>
+            <div id="kpi-obsolete-pct" class="posture-percent">7.3%</div>
+            <div id="kpi-obsolete-val" class="posture-val">$270K</div>
+          </div>
+        </div>
+
+        <!-- Posture Valuation Strip -->
+        <div class="valuation-strip">
+          <div class="valuation-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            <span>Total Valuasi Posture Clean</span>
+          </div>
+          <div id="kpi-total-val" class="valuation-amount">$3.70M USD</div>
+        </div>
+
+        <!-- 2. Work Order Readiness Section -->
+        <div class="section-header" style="margin-top: 18px;">
+          <span class="section-title">WORK ORDER READINESS (ALL RESERVASI & MP)</span>
+        </div>
+
+        <div class="donut-grid">
+          <!-- Donut 1: All Reservation -->
+          <div class="donut-card">
+            <div class="donut-card-title">WO (All Reservasi)</div>
+            <div class="donut-wrapper">
+              <svg class="donut-svg" viewBox="0 0 84 84">
+                <circle class="donut-circle-bg" cx="42" cy="42" r="36" />
+                <circle id="donut-circle-wo-all" class="donut-circle-val" cx="42" cy="42" r="36" stroke="var(--accent-cyan)" />
+              </svg>
+              <div id="donut-wo-all-pct" class="donut-center-text">72%</div>
+            </div>
+            <div id="donut-wo-all-sub" class="donut-subtitle">1329/1847 Ready</div>
+          </div>
+
+          <!-- Donut 2: Monthly Plan (MP) -->
+          <div class="donut-card">
+            <div class="donut-card-title">WO (Monthly Plan)</div>
+            <div class="donut-wrapper">
+              <svg class="donut-svg" viewBox="0 0 84 84">
+                <circle class="donut-circle-bg" cx="42" cy="42" r="36" />
+                <circle id="donut-circle-wo-mp" class="donut-circle-val" cx="42" cy="42" r="36" stroke="var(--accent-magenta)" />
+              </svg>
+              <div id="donut-wo-mp-pct" class="donut-center-text">87%</div>
+            </div>
+            <div id="donut-wo-mp-sub" class="donut-subtitle">806/930 Ready</div>
+          </div>
+        </div>
+
+        <!-- 3. Search & Scanner Box -->
+        <div class="section-header" style="margin-top: 22px;">
+          <span class="section-title">PENCARIAN & SCAN PART NUMBER</span>
+        </div>
+
+        <div class="search-container">
+          <div class="search-box">
+            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input id="inventory-search-input" type="text" class="search-input" placeholder="Ketik PN (misal: 1R, 215, 6V)..." autocomplete="off" autocorrect="off" autocapitalize="characters">
+            <div id="search-spinner" class="spinner" style="display: none; margin-right: 6px;"></div>
+            <button id="search-clear-btn" class="search-clear-btn" style="display: none;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+          <button id="btn-open-camera-scanner" class="ocr-scanner-btn" title="Scan Barcode / Label Kamera">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h3"></path><path d="M20 7V4h-3"></path><path d="M4 17v3h3"></path><path d="M20 17v3h-3"></path><line x1="4" y1="12" x2="20" y2="12"></line></svg>
+          </button>
+        </div>
+
+        <!-- 4. Dynamic Search Results Filter Chips -->
+        <div id="search-chips-container" style="display: none; margin-top: 10px;">
+          <div id="found-count-text" style="font-size: 11px; font-weight: 700; color: var(--accent-primary); letter-spacing: 0.5px; margin-bottom: 4px;">DITEMUKAN PART NUMBER:</div>
+          <div id="search-chips-row" class="chip-scroll-row"></div>
+        </div>
+
+        <!-- 5. Part Detail Container -->
+        <div id="part-detail-container"></div>
+
+        <!-- Empty State (Ready to Search) -->
+        <div id="search-empty-state" class="part-detail-card" style="text-align: center; padding: 28px 16px; margin-top: 14px;">
+          <svg style="color: rgba(255,179,0,0.6); margin: 0 auto 10px auto;" width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="11" y2="17"></line></svg>
+          <div style="font-size: 14px; font-weight: 700; color: var(--text-white);">Siap Mencari Part Number</div>
+          <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px; line-height: 1.5;">Ketik awalan PN atau gunakan pemindai kamera untuk memeriksa ATP stok dan alokasi WO seketika.</div>
+        </div>
+
+        <!-- Not Found State -->
+        <div id="search-not-found-state" class="part-detail-card" style="display: none; text-align: center; padding: 28px 16px; margin-top: 14px;">
+          <svg style="color: var(--text-muted); margin: 0 auto 10px auto;" width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="8" x2="14" y2="14"></line></svg>
+          <div style="font-size: 14px; font-weight: 700; color: var(--text-white);">Part Tidak Ditemukan</div>
+          <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Tidak ada part yang cocok dengan query '<span id="not-found-query"></span>'.</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 3: WIP TOOLS SCREEN (4 TABS)        -->
+    <!-- ========================================== -->
+    <section id="screen-wip" class="view-screen">
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <button id="btn-wip-back" class="icon-btn" title="Kembali">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </button>
+        <div class="top-bar-title">WIP TOOLS</div>
+        <div style="display: flex; gap: 4px;">
+          <button id="btn-wip-sync" class="icon-btn" title="Muat Ulang Database">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- 4 Tabs Header -->
+      <div class="wip-tabs-header">
+        <div class="wip-tab active" data-tab="0">Parts In</div>
+        <div class="wip-tab" data-tab="1">Evidence In</div>
+        <div class="wip-tab" data-tab="2">Parts Out</div>
+        <div class="wip-tab" data-tab="3">Evidence Out</div>
+      </div>
+
+      <!-- Tab Content Area -->
+      <div class="screen-scroll-body">
+        
+        <!-- ========================================== -->
+        <!-- TAB PANEL 0: PARTS IN (FORM)               -->
+        <!-- ========================================== -->
+        <div id="wip-tab-panel-0" class="wip-tab-content">
+          <div class="wip-form-card">
+            <div class="form-group">
+              <label class="form-label">NOMOR ORDER / OD NUMBER</label>
+              <div class="od-input-wrap">
+                <input id="wip-in-od-input" type="text" class="form-input" placeholder="Ketik OD (misal: 1042531)...">
+                <button id="btn-wip-in-add-od" type="button" class="btn-add-od">+ Tambah</button>
+              </div>
+              <div id="wip-in-od-chips" class="od-chips-row"></div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">MODEL UNIT / ALAT BERAT</label>
+              <input id="wip-in-unit" type="text" class="form-input" placeholder="Contoh: CAT 777D, D8R...">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">LOKASI RAK / WIP AREA</label>
+              <input id="wip-in-lokasi" type="text" class="form-input" placeholder="Contoh: RAK-A1, WIP-BAY-02...">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">FOTO BUKTI FISIK PART MASUK</label>
+              <input id="wip-in-photo-file-input" type="file" accept="image/*" multiple capture="environment" style="display: none;">
+              <div id="btn-wip-in-add-photo" class="photo-upload-area">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2" style="margin: 0 auto 6px auto;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                <div style="font-size: 13px; font-weight: 700; color: var(--text-white);">Ambil Foto / Pilih dari Galeri</div>
+                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">Foto otomatis dikompres sebelum dikirim</div>
+              </div>
+              <div id="wip-in-photo-preview" class="photo-thumbs-grid"></div>
+            </div>
+
+            <button id="btn-wip-in-submit" type="button" class="btn-submit-main">
+              SUBMIT REGISTRASI PARTS IN
+            </button>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB PANEL 1: EVIDENCE IN (LIST)            -->
+        <!-- ========================================== -->
+        <div id="wip-tab-panel-1" class="wip-tab-content" style="display: none;">
+          <div class="search-box" style="margin-top: 10px;">
+            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input id="wip-in-evidence-search" type="text" class="search-input" placeholder="Cari No OD, Unit, atau Lokasi...">
+          </div>
+          <div id="wip-in-records-list" style="margin-top: 14px;"></div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB PANEL 2: PARTS OUT (FORM)              -->
+        <!-- ========================================== -->
+        <div id="wip-tab-panel-2" class="wip-tab-content" style="display: none;">
+          <div class="wip-form-card">
+            <div class="form-group">
+              <label class="form-label">PIC WAREHOUSE (GUDANG)</label>
+              <input id="wip-out-pic-wh" type="text" class="form-input" placeholder="Nama staf warehouse pengirim...">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">PIC SERVICE (MEKANIK / USER)</label>
+              <input id="wip-out-pic-svc" type="text" class="form-input" placeholder="Nama mekanik / supervisor penerima...">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">NOMOR ORDER / OD NUMBER</label>
+              <div class="od-input-wrap">
+                <input id="wip-out-od-input" type="text" class="form-input" placeholder="Ketik OD (misal: 1042531)...">
+                <button id="btn-wip-out-add-od" type="button" class="btn-add-od">+ Tambah</button>
+              </div>
+              <div id="wip-out-od-chips" class="od-chips-row"></div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">FOTO BUKTI SERAH TERIMA FISIK</label>
+              <input id="wip-out-photo-file-input" type="file" accept="image/*" multiple capture="environment" style="display: none;">
+              <div id="btn-wip-out-add-photo" class="photo-upload-area">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2" style="margin: 0 auto 6px auto;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                <div style="font-size: 13px; font-weight: 700; color: var(--text-white);">Ambil Foto / Pilih dari Galeri</div>
+                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">Foto otomatis dikompres sebelum dikirim</div>
+              </div>
+              <div id="wip-out-photo-preview" class="photo-thumbs-grid"></div>
+            </div>
+
+            <button id="btn-wip-out-submit" type="button" class="btn-submit-main">
+              SUBMIT PENYERAHAN PARTS OUT
+            </button>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB PANEL 3: EVIDENCE OUT (LIST)           -->
+        <!-- ========================================== -->
+        <div id="wip-tab-panel-3" class="wip-tab-content" style="display: none;">
+          <div class="search-box" style="margin-top: 10px;">
+            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input id="wip-out-evidence-search" type="text" class="search-input" placeholder="Cari No OD atau Nama PIC...">
+          </div>
+          <div id="wip-out-records-list" style="margin-top: 14px;"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 4: QC HOSE ASSEMBLY SCREEN (2 TABS) -->
+    <!-- ========================================== -->
+    <section id="screen-qc" class="view-screen">
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <button id="btn-qc-back" class="icon-btn" title="Kembali">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </button>
+        <div class="top-bar-title">QC HOSE ASSEMBLY</div>
+        <div style="display: flex; gap: 4px;">
+          <button id="btn-qc-sync" class="icon-btn" title="Muat Ulang Database">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- 2 Tabs Header -->
+      <div class="qc-tabs-header">
+        <div class="qc-tab active" data-tab="0">Inspeksi Baru</div>
+        <div class="qc-tab" data-tab="1">Riwayat Bukti</div>
+      </div>
+
+      <!-- Tab Content Area -->
+      <div class="screen-scroll-body">
+        
+        <!-- ========================================== -->
+        <!-- TAB PANEL 0: INSPEKSI BARU (FORM)          -->
+        <!-- ========================================== -->
+        <div id="qc-tab-panel-0" class="qc-tab-content">
+          <div class="wip-form-card">
+            <div class="form-group">
+              <label class="form-label">PIC HOSE (TEKNISI / INSPEKTOR)</label>
+              <input id="qc-pic-hose" type="text" class="form-input" placeholder="Nama teknisi perakit hose...">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">PO SUBCON REFERENCE</label>
+              <input id="qc-po-subcon" type="text" class="form-input" placeholder="Nomor PO Subcon...">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">PART NUMBER (PN) HOSE</label>
+              <input id="qc-pn-hose" type="text" class="form-input" placeholder="Contoh: 1P-4567, 8T-8899...">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">ANGLE / SUDUT ORIENTASI</label>
+              <input id="qc-angle" type="text" class="form-input" placeholder="Contoh: 0°, 45°, 90°, 180°...">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">REMARKS / CATATAN (OPSIONAL)</label>
+              <input id="qc-remarks" type="text" class="form-input" placeholder="Catatan khusus atau kondisi part...">
+            </div>
+
+            <!-- 5 DEDICATED PHOTO INSPECTION SLOTS -->
+            <div class="section-header" style="margin-top: 18px; margin-bottom: 6px;">
+              <span class="section-title">5-TITIK FOTO BUKTI INSPEKSI FISIK</span>
+            </div>
+
+            <div class="qc-photo-grid">
+              <!-- Slot 1: Panjang -->
+              <input id="qc-input-panjang" type="file" accept="image/*" capture="environment" style="display: none;">
+              <div id="qc-slot-panjang" class="qc-photo-slot">
+                <button id="qc-del-panjang" type="button" class="qc-photo-delete" style="display: none;">×</button>
+                <div class="qc-slot-header">
+                  <div class="qc-slot-title"><span>📏</span> 1. Ukuran Panjang Hose Assy</div>
+                  <span id="qc-status-panjang" class="qc-badge-status badge-pending">WAJIB</span>
+                </div>
+                <div id="qc-placeholder-panjang" class="qc-placeholder-body">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  <div style="font-size: 11.5px; color: var(--text-secondary);">Sentuh untuk foto pengukuran panjang meteran</div>
+                </div>
+                <img id="qc-preview-panjang" class="qc-preview-img" style="display: none;" alt="Preview Panjang">
+              </div>
+
+              <!-- Slot 2: Crimp -->
+              <input id="qc-input-crimp" type="file" accept="image/*" capture="environment" style="display: none;">
+              <div id="qc-slot-crimp" class="qc-photo-slot">
+                <button id="qc-del-crimp" type="button" class="qc-photo-delete" style="display: none;">×</button>
+                <div class="qc-slot-header">
+                  <div class="qc-slot-title"><span>⚙️</span> 2. Pengukuran Mesin Crimp</div>
+                  <span id="qc-status-crimp" class="qc-badge-status badge-pending">WAJIB</span>
+                </div>
+                <div id="qc-placeholder-crimp" class="qc-placeholder-body">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  <div style="font-size: 11.5px; color: var(--text-secondary);">Sentuh untuk foto dial/caliper diameter crimp</div>
+                </div>
+                <img id="qc-preview-crimp" class="qc-preview-img" style="display: none;" alt="Preview Crimp">
+              </div>
+
+              <!-- Slot 3: Coupling 1 -->
+              <input id="qc-input-coupling1" type="file" accept="image/*" capture="environment" style="display: none;">
+              <div id="qc-slot-coupling1" class="qc-photo-slot">
+                <button id="qc-del-coupling1" type="button" class="qc-photo-delete" style="display: none;">×</button>
+                <div class="qc-slot-header">
+                  <div class="qc-slot-title"><span>🔩</span> 3. Coupling Ujung 1 (After Crimp)</div>
+                  <span id="qc-status-coupling1" class="qc-badge-status badge-pending">WAJIB</span>
+                </div>
+                <div id="qc-placeholder-coupling1" class="qc-placeholder-body">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  <div style="font-size: 11.5px; color: var(--text-secondary);">Sentuh untuk foto fitting & crimp collar ujung 1</div>
+                </div>
+                <img id="qc-preview-coupling1" class="qc-preview-img" style="display: none;" alt="Preview Coupling 1">
+              </div>
+
+              <!-- Slot 4: Coupling 2 -->
+              <input id="qc-input-coupling2" type="file" accept="image/*" capture="environment" style="display: none;">
+              <div id="qc-slot-coupling2" class="qc-photo-slot">
+                <button id="qc-del-coupling2" type="button" class="qc-photo-delete" style="display: none;">×</button>
+                <div class="qc-slot-header">
+                  <div class="qc-slot-title"><span>🔩</span> 4. Coupling Ujung 2 (After Crimp)</div>
+                  <span id="qc-status-coupling2" class="qc-badge-status badge-pending">WAJIB</span>
+                </div>
+                <div id="qc-placeholder-coupling2" class="qc-placeholder-body">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  <div style="font-size: 11.5px; color: var(--text-secondary);">Sentuh untuk foto fitting & crimp collar ujung 2</div>
+                </div>
+                <img id="qc-preview-coupling2" class="qc-preview-img" style="display: none;" alt="Preview Coupling 2">
+              </div>
+
+              <!-- Slot 5: Actual -->
+              <input id="qc-input-actual" type="file" accept="image/*" capture="environment" style="display: none;">
+              <div id="qc-slot-actual" class="qc-photo-slot">
+                <button id="qc-del-actual" type="button" class="qc-photo-delete" style="display: none;">×</button>
+                <div class="qc-slot-header">
+                  <div class="qc-slot-title"><span>🔎</span> 5. Foto Aktual Hose Utuh</div>
+                  <span id="qc-status-actual" class="qc-badge-status badge-pending">WAJIB</span>
+                </div>
+                <div id="qc-placeholder-actual" class="qc-placeholder-body">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  <div style="font-size: 11.5px; color: var(--text-secondary);">Sentuh untuk foto fisik utuh selang hose</div>
+                </div>
+                <img id="qc-preview-actual" class="qc-preview-img" style="display: none;" alt="Preview Actual">
+              </div>
+            </div>
+
+            <button id="btn-qc-submit" type="button" class="btn-submit-main" style="margin-top: 20px;">
+              SUBMIT HASIL INSPEKSI QC HOSE
+            </button>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB PANEL 1: RIWAYAT BUKTI (LIST)          -->
+        <!-- ========================================== -->
+        <div id="qc-tab-panel-1" class="qc-tab-content" style="display: none;">
+          <div class="search-box" style="margin-top: 10px;">
+            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input id="qc-evidence-search" type="text" class="search-input" placeholder="Cari PN Hose, PO Subcon, atau PIC...">
+          </div>
+          <div id="qc-records-list" style="margin-top: 14px;"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 5: STOCK & ROUTE TOOLS SCREEN       -->
+    <!-- ========================================== -->
+    <section id="screen-stock" class="view-screen">
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <button id="btn-stock-back" class="icon-btn" title="Kembali">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </button>
+        <div class="top-bar-title">STOCK & ROUTE TOOLS</div>
+        <div style="display: flex; gap: 4px;">
+          <button id="btn-stock-sync" class="icon-btn" title="Sinkronisasi Master Stok">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Scrollable Body -->
+      <div class="screen-scroll-body">
+        
+        <!-- Database Sync Info Badge -->
+        <div id="stock-sync-info-badge" class="stock-sync-strip">
+          Database: Memuat data stok...
+        </div>
+
+        <!-- PIC & Job Desc Card -->
+        <div class="wip-form-card" style="margin-top: 10px; padding: 14px 16px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label" style="font-size: 10.5px;">PIC AUDITOR</label>
+              <input id="stock-pic-input" type="text" class="form-input" style="height: 42px;" placeholder="Nama staf gudang...">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label" style="font-size: 10.5px;">JOB DESCRIPTION</label>
+              <input id="stock-job-desc-input" type="text" class="form-input" style="height: 42px;" placeholder="Misal: Opname RAK A-C...">
+            </div>
+          </div>
+        </div>
+
+        <!-- Bin Locator & Search Box with Autocomplete -->
+        <div id="stock-search-container">
+          <div class="stock-search-wrap">
+            <div class="search-box" style="flex: 1;">
+              <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input id="stock-search-input" type="text" class="search-input" placeholder="Cari PN / Lokasi Rak Gudang...">
+              <button id="btn-stock-camera-scanner" type="button" class="scanner-btn" title="Pindai Barcode Kamera">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="7" y1="8" x2="7" y2="16"></line><line x1="12" y1="8" x2="12" y2="16"></line><line x1="17" y1="8" x2="17" y2="12"></line><line x1="17" y1="15" x2="17" y2="16"></line></svg>
+              </button>
+            </div>
+            <button id="btn-stock-add-search" type="button" class="btn-add-od" style="height: 48px;">+ Tambah</button>
+          </div>
+          <!-- Dropdown suggestions -->
+          <div id="stock-suggestions-box" class="stock-suggestions-dropdown" style="display: none;"></div>
+        </div>
+
+        <!-- Counter & Status Summary Bar -->
+        <div class="stock-summary-bar">
+          <div class="stock-counter-card">
+            <div id="stock-count-total" class="stock-counter-val" style="color: #60A5FA;">0</div>
+            <div class="stock-counter-lbl">Total Item</div>
+          </div>
+          <div class="stock-counter-card">
+            <div id="stock-count-done" class="stock-counter-val" style="color: var(--accent-green);">0</div>
+            <div class="stock-counter-lbl">Selesai ✓</div>
+          </div>
+          <div class="stock-counter-card">
+            <div id="stock-count-pending" class="stock-counter-val" style="color: var(--accent-yellow);">0</div>
+            <div class="stock-counter-lbl">Belum Cek</div>
+          </div>
+        </div>
+
+        <!-- Filter Chips Bar -->
+        <div class="stock-filters-bar">
+          <div class="stock-filter-chip active" data-filter="all">Semua Item</div>
+          <div class="stock-filter-chip" data-filter="pending">Belum Selesai</div>
+          <div class="stock-filter-chip" data-filter="done">Sudah Selesai ✓</div>
+        </div>
+
+        <!-- Action Buttons Bar -->
+        <div class="stock-actions-grid">
+          <button id="btn-stock-import" type="button" class="btn-stock-action btn-stock-import">
+            📥 Import Task
+          </button>
+          <button id="btn-stock-export" type="button" class="btn-stock-action btn-stock-export">
+            📤 Export Hasil
+          </button>
+        </div>
+
+        <!-- Audited Items List -->
+        <div id="stock-audited-list" style="margin-top: 14px;"></div>
+
+        <!-- Clear Audit Link Button -->
+        <div style="text-align: center; margin: 20px 0 30px 0;">
+          <button id="btn-stock-clear-audit" type="button" style="background: none; border: none; font-size: 11.5px; color: var(--accent-red); cursor: pointer; text-decoration: underline;">
+            🗑️ Kosongkan Seluruh Daftar Audit
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SETTINGS & CACHE MODAL DIALOG              -->
+    <!-- ========================================== -->
+    <div id="inventory-settings-modal" class="modal-backdrop" style="display: none;">
+      <div class="modal-card">
+        <div class="modal-title">Status Cache & Sinkronisasi</div>
+        
+        <div class="modal-info-item">
+          <span style="font-size: 20px;">💾</span>
+          <div>
+            <div style="font-size: 10.5px; color: var(--text-secondary);">Database Mesin</div>
+            <div style="font-size: 12.5px; font-weight: 700; color: var(--text-white);">IndexedDB & LocalStorage PWA</div>
+          </div>
+        </div>
+
+        <div class="modal-info-item">
+          <span style="font-size: 20px;">📦</span>
+          <div>
+            <div style="font-size: 10.5px; color: var(--text-secondary);">Total Part Berhasil Diunduh</div>
+            <div id="modal-cached-count" style="font-size: 13.5px; font-weight: 800; color: var(--accent-green);">0 Part Tersimpan</div>
+          </div>
+        </div>
+
+        <div class="modal-info-item">
+          <span style="font-size: 20px;">🕒</span>
+          <div>
+            <div style="font-size: 10.5px; color: var(--text-secondary);">Waktu Sinkronisasi Terakhir</div>
+            <div id="modal-last-sync" style="font-size: 12px; font-weight: 700; color: #60A5FA;">-</div>
+          </div>
+        </div>
+
+        <button id="btn-clear-cache" class="btn-danger">Hapus Cache Lokal</button>
+        <button id="btn-close-modal" class="btn-secondary">Tutup</button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- CAMERA BARCODE & QR SCANNER MODAL          -->
+    <!-- ========================================== -->
+    <div id="camera-scanner-modal" class="scanner-modal" style="display: none;">
+      <div class="scanner-header">
+        <div class="scanner-title">Pindai Barcode / QR Part</div>
+        <button id="btn-close-scanner" class="scanner-close-btn" title="Tutup Kamera">✕</button>
+      </div>
+      <div class="scanner-viewport-wrap">
+        <div id="scanner-reader-box"></div>
+        <!-- Aim Reticle with Animated Laser -->
+        <div class="scanner-reticle">
+          <div class="reticle-corner top-left"></div>
+          <div class="reticle-corner top-right"></div>
+          <div class="reticle-corner bottom-left"></div>
+          <div class="reticle-corner bottom-right"></div>
+          <div class="reticle-laser-line"></div>
+        </div>
+      </div>
+      <div class="scanner-tip">
+        Arahkan kotak bidik ke barcode 1D atau QR Code pada stiker part/dus.
+      </div>
+    </div>
+
+    <!-- Global Toast Container -->
+    <div id="global-toast" class="toast-container"></div>
+
+  </div>
+
+  <!-- Application Bootstrap -->
+  <script type="module">
+    import { PinModule } from './js/modules/pinModule.js';
+    import { HomeModule } from './js/modules/homeModule.js';
+    import { InventoryModule } from './js/modules/inventoryModule.js';
+    import { WipModule } from './js/modules/wipModule.js';
+    import { QcHoseModule } from './js/modules/qcHoseModule.js';
+    import { StockModule } from './js/modules/stockModule.js';
+    import { ScannerService } from './js/services/scannerService.js';
+
+    // Screen Router
+    function navigateTo(screenId) {
+      if (!PinModule.isAuthenticated() && screenId !== 'pin') {
+        PinModule.lock();
+        return;
+      }
+
+      document.querySelectorAll('.view-screen').forEach(s => s.classList.remove('active'));
+      if (screenId === 'inventory') {
+        document.getElementById('screen-inventory').classList.add('active');
+        window.history.pushState({ screen: 'inventory' }, 'Inventory Report', '#inventory');
+      } else if (screenId === 'wip') {
+        document.getElementById('screen-wip').classList.add('active');
+        window.history.pushState({ screen: 'wip' }, 'WIP Tools', '#wip');
+      } else if (screenId === 'qc') {
+        document.getElementById('screen-qc').classList.add('active');
+        window.history.pushState({ screen: 'qc' }, 'QC Hose Assembly', '#qc');
+      } else if (screenId === 'stock') {
+        document.getElementById('screen-stock').classList.add('active');
+        window.history.pushState({ screen: 'stock' }, 'Stock & Route Tools', '#stock');
+      } else if (screenId === 'pin') {
+        document.getElementById('screen-pin').classList.add('active');
+      } else {
+        document.getElementById('screen-home').classList.add('active');
+        window.history.pushState({ screen: 'home' }, 'Home', '#home');
+      }
+    }
+
+    // Handle Browser Back Button / Gesture
+    window.addEventListener('popstate', (e) => {
+      if (!PinModule.isAuthenticated()) {
+        PinModule.lock();
+        return;
+      }
+
+      document.querySelectorAll('.view-screen').forEach(s => s.classList.remove('active'));
+      if (e.state && e.state.screen === 'inventory') {
+        document.getElementById('screen-inventory').classList.add('active');
+      } else if (e.state && e.state.screen === 'wip') {
+        document.getElementById('screen-wip').classList.add('active');
+      } else if (e.state && e.state.screen === 'qc') {
+        document.getElementById('screen-qc').classList.add('active');
+      } else if (e.state && e.state.screen === 'stock') {
+        document.getElementById('screen-stock').classList.add('active');
+      } else {
+        document.getElementById('screen-home').classList.add('active');
+      }
+    });
+
+    // Initialize Modules
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize PIN Module first
+      PinModule.init(() => {
+        navigateTo('home');
+      });
+
+      // Verify Session on load
+      if (PinModule.isAuthenticated()) {
+        navigateTo('home');
+      } else {
+        PinModule.lock();
+      }
+
+      HomeModule.init((target) => navigateTo(target));
+      InventoryModule.init();
+      WipModule.init();
+      QcHoseModule.init();
+      StockModule.init();
+      ScannerService.init();
+
+      // Back Buttons
+      document.getElementById('btn-inventory-back').addEventListener('click', () => navigateTo('home'));
+      document.getElementById('btn-wip-back').addEventListener('click', () => navigateTo('home'));
+      document.getElementById('btn-qc-back').addEventListener('click', () => navigateTo('home'));
+      document.getElementById('btn-stock-back').addEventListener('click', () => navigateTo('home'));
+
+      // Search Inputs for Evidence In / Out
+      const inSearch = document.getElementById('wip-in-evidence-search');
+      if (inSearch) inSearch.addEventListener('input', (e) => WipModule.renderEvidenceInList(e.target.value.trim()));
+
+      const outSearch = document.getElementById('wip-out-evidence-search');
+      if (outSearch) outSearch.addEventListener('input', (e) => WipModule.renderEvidenceOutList(e.target.value.trim()));
+
+      // Camera Barcode Scanner for Inventory Report
+      const invScanBtn = document.getElementById('btn-open-camera-scanner');
+      if (invScanBtn) {
+        invScanBtn.addEventListener('click', () => {
+          ScannerService.start((scannedText) => {
+            const input = document.getElementById('inventory-search-input');
+            if (input) {
+              input.value = scannedText;
+              input.dispatchEvent(new Event('input'));
+            }
+          });
+        });
+      }
+
+      // Camera Barcode Scanner for Stock & Route Tools
+      const stockScanBtn = document.getElementById('btn-stock-camera-scanner');
+      if (stockScanBtn) {
+        stockScanBtn.addEventListener('click', () => {
+          ScannerService.start((scannedText) => {
+            StockModule.addPartToAudit(scannedText);
+          });
+        });
+      }
+
+      // Register PWA Service Worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').catch((err) => {
+          console.warn('SW registration failed:', err);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

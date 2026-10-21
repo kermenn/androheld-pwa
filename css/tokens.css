@@ -1,0 +1,61 @@
+/* ==========================================================================
+   AndroHeld Design System Tokens (Identical to Jetpack Compose Material 3)
+   ========================================================================== */
+
+:root {
+  /* Backgrounds */
+  --bg-app: #0F0F12;
+  --bg-topbar: #141418;
+  --bg-surface: #16161C;
+  --bg-surface-elevated: #1E1E26;
+  --bg-surface-active: #242430;
+  --bg-input: #121217;
+
+  /* Borders */
+  --border-app: #22222E;
+  --border-card: #2C2C36;
+  --border-subtle: #333342;
+  --border-active: #4A4A5E;
+
+  /* Typography Colors */
+  --text-white: #FFFFFF;
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: #9E9EA8;
+  --text-muted: #6B6B78;
+  --text-disabled: #474752;
+
+  /* Brand Accents (Exact matches to Android Theme) */
+  --accent-primary: #FFB300;     /* AndroHeld Amber / Main Tools */
+  --accent-cyan: #00E5FF;        /* Route & Stock / WO All Readiness */
+  --accent-orange: #FF7043;      /* WIP Tools */
+  --accent-green: #00E676;       /* QC Hose / Health Stock */
+  --accent-purple: #AB47BC;      /* Inventory Report Title Badge */
+  --accent-magenta: #D500F9;     /* WO Monthly Plan */
+  --accent-yellow: #FFD600;      /* Excess Stock */
+  --accent-deadstock: #FF6D00;   /* Deadstock */
+  --accent-red: #FF1744;         /* Obsolete / Critical Risk */
+  --accent-locked: #78909C;      /* Battery Supply Locked */
+
+  /* Spacing */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.45);
+  --shadow-glow-amber: 0 0 20px rgba(255, 179, 0, 0.25);
+  --shadow-glow-green: 0 0 20px rgba(0, 230, 118, 0.25);
+  --shadow-glow-cyan: 0 0 20px rgba(0, 229, 255, 0.25);
+
+  /* iOS Safe Area Insets */
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+
+  /* Transitions */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}

@@ -643,6 +643,12 @@
               <label class="form-label">NOMOR ORDER / OD NUMBER</label>
               <div class="od-input-wrap">
                 <input id="wip-in-od-input" type="text" class="form-input" placeholder="Ketik OD (misal: 1042531)...">
+                <button id="btn-wip-in-scan-od" type="button" class="btn-scan-od" title="Pindai OCR No OD" style="height: 48px; width: 48px; display: flex; align-items: center; justify-content: center; background: var(--accent-primary); border: none; border-radius: 8px; color: #000; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 8px rgba(255,193,7,0.3);">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                    <path d="M4 7V4h3"></path><path d="M20 7V4h-3"></path><path d="M4 17v3h3"></path><path d="M20 17v3h-3"></path>
+                    <line x1="8" y1="9" x2="16" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="13" y2="17"></line>
+                  </svg>
+                </button>
                 <button id="btn-wip-in-add-od" type="button" class="btn-add-od">+ Tambah</button>
               </div>
               <div id="wip-in-od-chips" class="od-chips-row"></div>
@@ -718,6 +724,12 @@
               <label class="form-label">NOMOR ORDER / OD NUMBER</label>
               <div class="od-input-wrap">
                 <input id="wip-out-od-input" type="text" class="form-input" placeholder="Ketik OD (misal: 1042531)...">
+                <button id="btn-wip-out-scan-od" type="button" class="btn-scan-od" title="Pindai OCR No OD" style="height: 48px; width: 48px; display: flex; align-items: center; justify-content: center; background: var(--accent-primary); border: none; border-radius: 8px; color: #000; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 8px rgba(255,193,7,0.3);">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                    <path d="M4 7V4h3"></path><path d="M20 7V4h-3"></path><path d="M4 17v3h3"></path><path d="M20 17v3h-3"></path>
+                    <line x1="8" y1="9" x2="16" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="13" y2="17"></line>
+                  </svg>
+                </button>
                 <button id="btn-wip-out-add-od" type="button" class="btn-add-od">+ Tambah</button>
               </div>
               <div id="wip-out-od-chips" class="od-chips-row"></div>
@@ -1020,13 +1032,10 @@
               </svg>
               <input id="stock-search-input" type="text" class="search-input"
                 placeholder="Cari PN / Lokasi Rak Gudang...">
-              <button id="btn-stock-camera-scanner" type="button" class="scanner-btn" title="Pindai Barcode Kamera">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                  <line x1="7" y1="8" x2="7" y2="16"></line>
-                  <line x1="12" y1="8" x2="12" y2="16"></line>
-                  <line x1="17" y1="8" x2="17" y2="12"></line>
-                  <line x1="17" y1="15" x2="17" y2="16"></line>
+              <button id="btn-stock-camera-scanner" type="button" class="scanner-btn" title="Pindai OCR Part / Bin Rak Kamera" style="color: var(--accent-primary);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                  <path d="M4 7V4h3"></path><path d="M20 7V4h-3"></path><path d="M4 17v3h3"></path><path d="M20 17v3h-3"></path>
+                  <line x1="8" y1="9" x2="16" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="13" y2="17"></line>
                 </svg>
               </button>
             </div>
@@ -1343,12 +1352,42 @@
         });
       }
 
-      // Camera Barcode Scanner for Stock & Route Tools
+      // Camera OCR Scanner for Stock & Route Tools
       const stockScanBtn = document.getElementById('btn-stock-camera-scanner');
       if (stockScanBtn) {
         stockScanBtn.addEventListener('click', () => {
-          ScannerService.start((scannedText) => {
+          OcrService.start((scannedText) => {
             StockModule.addPartToAudit(scannedText);
+          });
+        });
+      }
+
+      // Camera OCR Scanner for WIP Tools Parts In
+      const wipInScanBtn = document.getElementById('btn-wip-in-scan-od');
+      if (wipInScanBtn) {
+        wipInScanBtn.addEventListener('click', () => {
+          OcrService.start((scannedText) => {
+            const inOdInput = document.getElementById('wip-in-od-input');
+            if (inOdInput) {
+              inOdInput.value = scannedText;
+              const inAddOdBtn = document.getElementById('btn-wip-in-add-od');
+              if (inAddOdBtn) inAddOdBtn.click();
+            }
+          });
+        });
+      }
+
+      // Camera OCR Scanner for WIP Tools Parts Out
+      const wipOutScanBtn = document.getElementById('btn-wip-out-scan-od');
+      if (wipOutScanBtn) {
+        wipOutScanBtn.addEventListener('click', () => {
+          OcrService.start((scannedText) => {
+            const outOdInput = document.getElementById('wip-out-od-input');
+            if (outOdInput) {
+              outOdInput.value = scannedText;
+              const outAddOdBtn = document.getElementById('btn-wip-out-add-od');
+              if (outAddOdBtn) outAddOdBtn.click();
+            }
           });
         });
       }

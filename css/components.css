@@ -2078,6 +2078,24 @@
   100% { top: 96%; opacity: 0.8; }
 }
 
+.ocr-target-box.locked {
+  border-color: #00E676 !important;
+  box-shadow: 0 0 35px rgba(0, 230, 118, 0.7), inset 0 0 20px rgba(0, 230, 118, 0.3) !important;
+  transition: all 0.25s ease;
+}
+
+.ocr-target-box.locked .ocr-target-corner {
+  border-color: #00E676;
+}
+
+.ocr-target-box.locked .ocr-scan-line {
+  background: linear-gradient(90deg, transparent, #00E676 20%, #FFF 50%, #00E676 80%, transparent) !important;
+  box-shadow: 0 0 16px #00E676 !important;
+  animation: none !important;
+  top: 50% !important;
+}
+
+
 .ocr-instruction {
   position: absolute;
   bottom: calc(50% + 85px);

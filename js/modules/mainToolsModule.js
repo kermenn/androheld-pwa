@@ -6,7 +6,7 @@
 import { CONFIG } from '../config.js';
 import { GasService } from '../services/gasService.js';
 import { SheetsService } from '../services/sheetsService.js';
-import { ScannerService } from '../services/scannerService.js';
+import { OcrService } from '../services/ocrService.js';
 
 export const MainToolsModule = {
   activeTab: 'sap',
@@ -39,11 +39,11 @@ export const MainToolsModule = {
       });
     }
 
-    // Camera Barcode Scanner for HU Inbound / Outbound
+    // Camera OCR Scanner for HU Inbound / Outbound
     const btnScanHu = document.getElementById('btn-maintools-scan-hu');
     if (btnScanHu) {
       btnScanHu.addEventListener('click', () => {
-        ScannerService.start((scannedText) => {
+        OcrService.start((scannedText) => {
           const input = document.getElementById('maintools-hu-input');
           if (input) {
             input.value = scannedText;

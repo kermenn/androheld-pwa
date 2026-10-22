@@ -5,23 +5,25 @@
 import { CONFIG } from '../config.js';
 
 export const SheetsService = {
-  async fetchCsv(url) {
-    // 1. Google Sheets published CSV natively returns Access-Control-Allow-Origin: *
-    // Try direct fetch first for maximum speed
+  async fetchRawCsv(url) {
     let res;
+    let shouldTryProxy = false;
+
     try {
       res = await fetch(url);
-    } catch (directErr) {
-      // 2. Fallback to Cloudflare Proxy if local firewall/CORS blocks direct
-      if (CONFIG.CLOUDFLARE_PROXY_URL) {
-        try {
-          const proxyUrl = `${CONFIG.CLOUDFLARE_PROXY_URL}?url=${encodeURIComponent(url)}`;
-          res = await fetch(proxyUrl);
-        } catch (proxyErr) {
-          throw new Error("Gagal terhubung ke Google Sheets & Cloudflare Proxy.");
-        }
-      } else {
-        throw directErr;
+      if (!res.ok) {
+        shouldTryProxy = true;
+      }
+    } catch (_) {
+      shouldTryProxy = true;
+    }
+
+    if (shouldTryProxy && CONFIG.CLOUDFLARE_PROXY_URL) {
+      try {
+        const proxyUrl = `${CONFIG.CLOUDFLARE_PROXY_URL}?url=${encodeURIComponent(url)}`;
+        res = await fetch(proxyUrl);
+      } catch (proxyErr) {
+        throw new Error("Gagal terhubung ke Google Sheets & Cloudflare Proxy.");
       }
     }
 
@@ -29,7 +31,11 @@ export const SheetsService = {
       throw new Error(`Gagal memuat data spreadsheet (${res ? res.status : 'Offline'})`);
     }
 
-    const text = await res.text();
+    return await res.text();
+  },
+
+  async fetchCsv(url) {
+    const text = await this.fetchRawCsv(url);
     return this.parseCsv(text);
   },
 
@@ -198,7 +204,7 @@ export const SheetsService = {
   },
 
   async fetchSapEvidence() {
-    const rawCsv = await this.fetchCsvWithFallback(CONFIG.SHEETS.SAP_EVIDENCE);
+    const rawCsv = await this.fetchRawCsv(CONFIG.SHEETS.SAP_EVIDENCE);
     const lines = rawCsv.split(/\r?\n/).filter(line => line.trim().length > 0);
     const records = [];
 
@@ -213,10 +219,13 @@ export const SheetsService = {
           continue;
         }
 
+        const photoUrls = photoUrl ? photoUrl.split(/[\n,]/).map(u => u.trim()).filter(u => u.startsWith("http://") || u.startsWith("https://")) : [];
+
         records.push({
           timestamp: timestamp,
           huInbOut: huInbOut,
-          photoUrl: photoUrl
+          photoUrl: photoUrl,
+          photoUrls: photoUrls
         });
       }
     }

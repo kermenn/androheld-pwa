@@ -1,6 +1,6 @@
 /**
  * AndroHeld Web - Main Tools Module (SAP WebGUI, Evidence Input, & Data View)
- * 100% Mirroring SapBrowserViewModel.kt & SapBrowserScreen.kt
+ * 100% Faithful to AndroHeld Native Compose UI (SapBrowserViewModel.kt & SapBrowserScreen.kt)
  */
 
 import { CONFIG } from '../config.js';
@@ -11,7 +11,7 @@ import { ScannerService } from '../services/scannerService.js';
 export const MainToolsModule = {
   activeTab: 'sap',
   cachedPhotos: [], // Array of { filename, base64, previewUrl }
-  evidenceRecords: [], // Array of { timestamp, huInbOut, photoUrl }
+  evidenceRecords: [], // Array of { timestamp, huInbOut, photoUrl, photoUrls }
   isLoadingData: false,
   isSubmitting: false,
 
@@ -21,7 +21,7 @@ export const MainToolsModule = {
   },
 
   bindEvents() {
-    // Tab Switching
+    // 3 Tab Switching (SAP Menu, Submit Evidence, Database View)
     const tabBtns = document.querySelectorAll('.maintools-tab-btn');
     tabBtns.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -52,31 +52,57 @@ export const MainToolsModule = {
       });
     }
 
-    // Photo Input (Camera / Gallery)
-    const photoInput = document.getElementById('maintools-photo-input');
-    if (photoInput) {
-      photoInput.addEventListener('change', async (e) => {
-        const files = Array.from(e.target.files || []);
-        if (files.length === 0) return;
+    // Helper for processing files
+    const handleFiles = async (fileList) => {
+      const files = Array.from(fileList || []);
+      if (files.length === 0) return;
 
-        const remainingSlots = 10 - this.cachedPhotos.length;
-        if (remainingSlots <= 0) {
-          this.showToast('Maksimal 10 foto sudah tercapai.');
-          return;
+      const remainingSlots = 10 - this.cachedPhotos.length;
+      if (remainingSlots <= 0) {
+        this.showToast('Maksimal 10 foto sudah tercapai.');
+        return;
+      }
+
+      const filesToProcess = files.slice(0, remainingSlots);
+      for (const file of filesToProcess) {
+        try {
+          const compressed = await GasService.compressImage(file, 1280, 0.75);
+          this.cachedPhotos.push(compressed);
+        } catch (err) {
+          console.error('Gagal memproses foto:', err);
         }
+      }
 
-        const filesToProcess = files.slice(0, remainingSlots);
-        for (const file of filesToProcess) {
-          try {
-            const compressed = await GasService.compressImage(file, 1280, 0.75);
-            this.cachedPhotos.push(compressed);
-          } catch (err) {
-            console.error('Gagal memproses foto:', err);
-          }
-        }
+      this.renderPhotos();
+    };
 
-        photoInput.value = '';
+    // Camera Direct Input
+    const cameraInput = document.getElementById('maintools-camera-input');
+    if (cameraInput) {
+      cameraInput.addEventListener('change', async (e) => {
+        await handleFiles(e.target.files);
+        cameraInput.value = '';
+      });
+    }
+
+    // Gallery Multi-Image Input
+    const galleryInput = document.getElementById('maintools-gallery-input');
+    if (galleryInput) {
+      galleryInput.addEventListener('change', async (e) => {
+        await handleFiles(e.target.files);
+        galleryInput.value = '';
+      });
+    }
+
+    // Clear All Data Form Button
+    const btnClearAll = document.getElementById('btn-maintools-clear-all');
+    if (btnClearAll) {
+      btnClearAll.addEventListener('click', () => {
+        const huInput = document.getElementById('maintools-hu-input');
+        if (huInput) huInput.value = '';
+        this.cachedPhotos = [];
         this.renderPhotos();
+        this.showToast('Form Evidence dibersihkan.');
       });
     }
 
@@ -96,7 +122,7 @@ export const MainToolsModule = {
       });
     }
 
-    // Sync Data View Button
+    // Sync Data View Button in Topbar
     const btnSync = document.getElementById('btn-maintools-sync-data');
     if (btnSync) {
       btnSync.addEventListener('click', () => {
@@ -136,7 +162,7 @@ export const MainToolsModule = {
       card.innerHTML = `
         <img src="${photo.previewUrl}" alt="Preview Foto ${idx + 1}" class="evidence-photo-thumb">
         <button type="button" class="evidence-photo-del-btn" data-index="${idx}" title="Hapus Foto">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       `;
 
@@ -157,30 +183,30 @@ export const MainToolsModule = {
     const huInbOut = (huInput?.value || '').trim();
 
     if (!huInbOut) {
-      this.showToast('No HU / Inb / Out tidak boleh kosong!');
+      this.showToast('HU/Inb/Out Number tidak boleh kosong!');
       huInput?.focus();
       return;
     }
 
     if (this.cachedPhotos.length === 0) {
-      this.showToast('Silakan ambil atau pilih minimal 1 foto!');
+      this.showToast('Silakan ambil atau pilih minimal 1 foto bukti fisik!');
       return;
     }
 
     const btnSubmit = document.getElementById('btn-maintools-submit-evidence');
-    const originalText = btnSubmit ? btnSubmit.innerHTML : 'Kirim Data Evidence';
+    const originalText = btnSubmit ? btnSubmit.innerHTML : 'SUBMIT EVIDENCE';
 
     try {
       this.isSubmitting = true;
       if (btnSubmit) {
         btnSubmit.disabled = true;
         btnSubmit.innerHTML = `
-          <div class="spinner-small" style="margin-right: 8px;"></div>
-          Mengirim (${this.cachedPhotos.length} foto)...
+          <div class="spinner-small" style="margin-right: 8px; border-top-color: #000;"></div>
+          MENGIRIM (${this.cachedPhotos.length} FOTO)...
         `;
       }
 
-      const res = await GasService.submitSapEvidence(huInbOut, this.cachedPhotos);
+      await GasService.submitSapEvidence(huInbOut, this.cachedPhotos);
 
       this.showToast('Data Evidence SAP berhasil dikirim!');
 
@@ -225,9 +251,10 @@ export const MainToolsModule = {
       if (syncBtn) syncBtn.classList.add('rotating');
       if (container && this.evidenceRecords.length === 0) {
         container.innerHTML = `
-          <div style="text-align: center; padding: 36px 16px; color: var(--text-secondary);">
-            <div class="spinner" style="margin: 0 auto 12px;"></div>
-            Memuat data Evidence dari Google Sheets...
+          <div style="text-align: center; padding: 48px 16px; color: var(--text-secondary);">
+            <div class="spinner-androheld" style="margin: 0 auto 16px;"></div>
+            <div style="color: #FFFFFF; font-weight: 600; font-size: 14px;">Mengunduh data Evidence...</div>
+            <div style="font-size: 12px; margin-top: 4px; color: var(--text-secondary);">Menghubungkan ke Google Sheets via Cloudflare Proxy</div>
           </div>
         `;
       }
@@ -238,20 +265,22 @@ export const MainToolsModule = {
       this.renderEvidenceList();
 
       if (forceSync) {
-        this.showToast(`Data disinkronkan (${records.length} rekaman).`);
+        this.showToast(`Berhasil sinkron (${records.length} data SAP Evidence).`);
       }
     } catch (err) {
       console.error('Gagal sinkron data SAP Evidence:', err);
       if (container && this.evidenceRecords.length === 0) {
         container.innerHTML = `
-          <div style="text-align: center; padding: 24px 16px; color: #FF5252;">
-            Gagal memuat data dari cloud.<br>
-            <button class="primary-btn" id="btn-retry-evidence-sync" style="margin-top: 12px; width: auto; padding: 8px 16px;">Coba Lagi</button>
+          <div style="text-align: center; padding: 32px 16px;">
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2" style="margin-bottom: 12px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            <div style="color: #FFFFFF; font-weight: 700; font-size: 14px;">Gagal memuat database Evidence!</div>
+            <div style="font-size: 12px; color: var(--text-secondary); margin: 6px 0 16px;">${this.escapeHtml(err.message)}</div>
+            <button class="androheld-primary-btn" id="btn-retry-evidence-sync" style="width: auto; padding: 8px 20px; font-size: 12px;">COBA LAGI</button>
           </div>
         `;
         document.getElementById('btn-retry-evidence-sync')?.addEventListener('click', () => this.loadEvidenceData(true));
       }
-      this.showToast('Gagal memuat data Google Sheets: ' + err.message);
+      this.showToast('Gagal sinkron data: ' + err.message);
     } finally {
       this.isLoadingData = false;
       if (syncBtn) syncBtn.classList.remove('rotating');
@@ -278,31 +307,45 @@ export const MainToolsModule = {
 
     if (filtered.length === 0) {
       container.innerHTML = `
-        <div style="text-align: center; padding: 32px 16px; color: var(--text-secondary);">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 8px; opacity: 0.5;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="11" y2="17"></line></svg>
-          <div>Tidak ada data Evidence yang cocok.</div>
+        <div style="text-align: center; padding: 48px 16px; color: var(--text-secondary);">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 12px; opacity: 0.4;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <div style="color: #FFFFFF; font-weight: 700; font-size: 14px;">
+            ${this.evidenceRecords.length === 0 ? 'Belum ada data SAP Evidence!' : 'Data tidak ditemukan!'}
+          </div>
+          <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+            ${this.evidenceRecords.length === 0 ? 'Ketuk ikon Refresh di kanan atas untuk menyinkronkan data.' : 'Coba cari dengan nomor HU atau tanggal lain.'}
+          </div>
         </div>
       `;
       return;
     }
 
+    // Render cards matching Compose Card in SapBrowserScreen.kt
     container.innerHTML = filtered.map(item => {
-      const hasPhoto = item.photoUrl && item.photoUrl.startsWith('http');
+      const urls = item.photoUrls && item.photoUrls.length > 0 
+        ? item.photoUrls 
+        : (item.photoUrl && item.photoUrl.startsWith('http') ? [item.photoUrl] : []);
+      const hasPhoto = urls.length > 0;
+      const firstUrl = urls[0] || '#';
+
       return `
         <div class="evidence-record-card">
           <div class="evidence-record-header">
-            <div class="evidence-hu-badge">${this.escapeHtml(item.huInbOut)}</div>
-            <div class="evidence-timestamp">${this.escapeHtml(item.timestamp)}</div>
+            <div class="evidence-hu-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2.2"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><rect x="7" y="7" width="10" height="10" rx="1"></rect></svg>
+              <span class="evidence-hu-text">${this.escapeHtml(item.huInbOut)}</span>
+            </div>
+            <div class="evidence-timestamp-text">${this.escapeHtml(item.timestamp)}</div>
           </div>
           ${hasPhoto ? `
-            <div class="evidence-photo-action">
-              <a href="${this.escapeHtml(item.photoUrl)}" target="_blank" rel="noopener noreferrer" class="evidence-photo-link-btn">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                Lihat Foto di Google Drive ↗
+            <div class="evidence-photo-action-wrap">
+              <a href="${this.escapeHtml(firstUrl)}" target="_blank" rel="noopener noreferrer" class="evidence-native-photo-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c1.65 0 3-1.35 3-3s-1.35-3-3-3-3 1.35-3 3 1.35 3 3 3zm0-4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7-4h-3.17l-1.83-2H9.83L8 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h15c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h4.05l1.83-2h4.24l1.83 2H19v12z"/></svg>
+                <span>${urls.length > 1 ? `BUKA BUKTI FOTO EVIDENCE (${urls.length})` : 'BUKA BUKTI FOTO EVIDENCE'}</span>
               </a>
             </div>
           ` : `
-            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">Foto tidak tersedia</div>
+            <div class="evidence-no-photo-text">Tidak ada bukti foto terlampir</div>
           `}
         </div>
       `;

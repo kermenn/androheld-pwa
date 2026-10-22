@@ -8,7 +8,7 @@ export const CONFIG = {
 
   // Supabase Cloud (Inventory Report)
   SUPABASE_URL: "https://culgtxrkcdkkcsemocym.supabase.co",
-  SUPABASE_KEY: atob("c2Jfc2VjcmV0X2lPbWs0THdyOWg3TXlES19sMVpQSXdfTXRHX2djRnQ="),
+  SUPABASE_KEY: atob("c2JfcHVibGlzaGFibGVfanRTT3BVYnRVakZRQnJWVWgzX2tWUV9DaXhmVzhlWQ=="),
 
   // SAP WebGUI URL
   SAP_URL: "https://erp.trakindo.co.id/SAP/BC/GUI/SAP/ITS/zimm_lmob?sap-client=300&sap-language=EN",

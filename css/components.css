@@ -1953,6 +1953,292 @@
   animation: spin 0.8s linear infinite;
 }
 
+/* ==========================================================================
+   OCR Text Recognition Scanner Modal (Matching Android OcrScannerOverlay)
+   ========================================================================== */
+.ocr-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #000000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  user-select: none;
+}
+
+.ocr-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+.ocr-circle-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(30, 30, 40, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.ocr-circle-btn:active {
+  transform: scale(0.92);
+  background: rgba(255, 193, 7, 0.3);
+}
+
+.ocr-circle-btn.active {
+  background: var(--accent-primary);
+  color: #000000;
+  border-color: var(--accent-primary);
+}
+
+.ocr-title-badge {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: var(--accent-primary);
+  background: rgba(255, 193, 7, 0.12);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  padding: 6px 14px;
+  border-radius: 20px;
+}
+
+.ocr-viewport-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000000;
+}
+
+#ocr-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Yellow Bounding Box Target Window */
+.ocr-target-box {
+  position: absolute;
+  width: 88%;
+  max-width: 400px;
+  height: 140px;
+  border: 2.5px solid #FFC107;
+  border-radius: 14px;
+  box-shadow: 0 0 25px rgba(255, 193, 7, 0.45), inset 0 0 15px rgba(255, 193, 7, 0.15);
+  pointer-events: none;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.ocr-target-corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: #FFFFFF;
+  border-style: solid;
+  border-width: 0;
+}
+
+.ocr-target-corner.tl { top: -2px; left: -2px; border-top-width: 3px; border-left-width: 3px; border-top-left-radius: 12px; }
+.ocr-target-corner.tr { top: -2px; right: -2px; border-top-width: 3px; border-right-width: 3px; border-top-right-radius: 12px; }
+.ocr-target-corner.bl { bottom: -2px; left: -2px; border-bottom-width: 3px; border-left-width: 3px; border-bottom-left-radius: 12px; }
+.ocr-target-corner.br { bottom: -2px; right: -2px; border-bottom-width: 3px; border-right-width: 3px; border-bottom-right-radius: 12px; }
+
+/* Animated Scanning Laser */
+.ocr-scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #FFC107 20%, #FFF 50%, #FFC107 80%, transparent);
+  box-shadow: 0 0 12px #FFC107;
+  animation: ocrLaserScan 2s ease-in-out infinite alternate;
+}
+
+@keyframes ocrLaserScan {
+  0% { top: 0%; opacity: 0.8; }
+  100% { top: 96%; opacity: 0.8; }
+}
+
+.ocr-instruction {
+  position: absolute;
+  bottom: calc(50% + 85px);
+  left: 20px;
+  right: 20px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #FFFFFF;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  padding: 8px 16px;
+  border-radius: 20px;
+  margin: 0 auto;
+  max-width: 340px;
+  pointer-events: none;
+}
+
+/* Bottom Sheet Controls & Results */
+.ocr-bottom-sheet {
+  background: rgba(18, 18, 24, 0.96);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255, 193, 7, 0.25);
+  padding: 16px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 10;
+}
+
+.ocr-status-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #CCCCCC;
+  text-align: center;
+  min-height: 20px;
+}
+
+.ocr-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+}
+
+.ocr-status-dot.loading {
+  background: #60A5FA;
+  animation: ocrPulse 1s infinite;
+}
+
+@keyframes ocrPulse {
+  0% { transform: scale(0.9); opacity: 0.5; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.5; }
+}
+
+.ocr-capture-btn {
+  height: 48px;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.ocr-capture-btn.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Auto-Select Clickable Gold Card */
+.ocr-best-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--accent-primary);
+  color: #000000;
+  padding: 12px 18px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(255, 193, 7, 0.4);
+  cursor: pointer;
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.ocr-best-card:active {
+  transform: scale(0.98);
+  background: #FFB300;
+}
+
+.ocr-best-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ocr-best-lbl {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.ocr-best-val {
+  font-family: monospace;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+.ocr-best-arrow {
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 10px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+}
+
+/* Candidate Chips Row */
+.ocr-candidates-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ocr-candidates-label {
+  font-size: 11px;
+  color: #9E9EA8;
+}
+
+.ocr-chips-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.ocr-chips-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.ocr-candidate-chip {
+  background: #252532;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  font-family: monospace;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: 8px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.ocr-candidate-chip:active {
+  background: rgba(255, 193, 7, 0.2);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+
 
 
 

@@ -17,9 +17,9 @@
   <link rel="icon" type="image/png" href="./assets/icon.png">
 
   <!-- Stylesheets with Cache Buster -->
-  <link rel="stylesheet" href="./css/tokens.css?v=14">
-  <link rel="stylesheet" href="./css/components.css?v=14">
-  <link rel="stylesheet" href="./css/app.css?v=14">
+  <link rel="stylesheet" href="./css/tokens.css?v=15">
+  <link rel="stylesheet" href="./css/components.css?v=15">
+  <link rel="stylesheet" href="./css/app.css?v=15">
 
   <!-- Offline Camera Barcode & QR Scanner Library -->
   <script src="./js/lib/html5-qrcode.min.js"></script>
@@ -1650,17 +1650,17 @@
 
   <!-- Application Bootstrap -->
   <script type="module">
-    import { PinModule } from './js/modules/pinModule.js?v=13';
-    import { HomeModule } from './js/modules/homeModule.js?v=13';
-    import { MainToolsModule } from './js/modules/mainToolsModule.js?v=13';
-    import { InventoryModule } from './js/modules/inventoryModule.js?v=13';
-    import { WipModule } from './js/modules/wipModule.js?v=13';
-    import { QcHoseModule } from './js/modules/qcHoseModule.js?v=13';
-    import { StockModule } from './js/modules/stockModule.js?v=13';
-    import { BorrowingModule } from './js/modules/borrowingModule.js?v=13';
-    import { RosterModule } from './js/modules/rosterModule.js?v=13';
-    import { ScannerService } from './js/services/scannerService.js?v=13';
-    import { OcrService } from './js/services/ocrService.js?v=13';
+    import { PinModule } from './js/modules/pinModule.js?v=15';
+    import { HomeModule } from './js/modules/homeModule.js?v=15';
+    import { MainToolsModule } from './js/modules/mainToolsModule.js?v=15';
+    import { InventoryModule } from './js/modules/inventoryModule.js?v=15';
+    import { WipModule } from './js/modules/wipModule.js?v=15';
+    import { QcHoseModule } from './js/modules/qcHoseModule.js?v=15';
+    import { StockModule } from './js/modules/stockModule.js?v=15';
+    import { BorrowingModule } from './js/modules/borrowingModule.js?v=15';
+    import { RosterModule } from './js/modules/rosterModule.js?v=15';
+    import { ScannerService } from './js/services/scannerService.js?v=15';
+    import { OcrService } from './js/services/ocrService.js?v=15';
 
     // Screen Router
     function navigateTo(screenId) {
@@ -1826,7 +1826,7 @@
 
       // Register PWA Service Worker with auto-update
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js?v=14').then((reg) => {
+        navigator.serviceWorker.register('./sw.js?v=15').then((reg) => {
           reg.update();
         }).catch((err) => {
           console.warn('SW registration failed:', err);

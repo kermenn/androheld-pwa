@@ -1,0 +1,562 @@
+{
+  "employees": [
+    {
+      "id": 2,
+      "no": 1,
+      "name": "Muhammad Riski",
+      "sn": "10003005",
+      "position": "Counterman",
+      "location": "CK BMB - Sitarum",
+      "phone": "082213902917",
+      "pattern_id": "night_rotation_15",
+      "ref_date": "2026-10-01",
+      "ref_cycle_index": 12,
+      "notes": "Rotasi malam 15 hari (5 Siang - 2 OFF - 5 Malam - 3 OFF)"
+    },
+    {
+      "id": 3,
+      "no": 2,
+      "name": "Ahmad Hidayat",
+      "sn": "10003599",
+      "position": "Counterman",
+      "location": "CK BMB - Sitarum",
+      "phone": "085750973830",
+      "pattern_id": "regular_5_2",
+      "ref_date": "2026-10-01",
+      "ref_cycle_index": 3,
+      "notes": "Jadwal reguler 5:2 (Sabtu-Minggu Libur)"
+    },
+    {
+      "id": 4,
+      "no": 3,
+      "name": "Syaiful Rahman",
+      "sn": "7775",
+      "position": "Counterman",
+      "location": "CK BMB - Sitarum",
+      "phone": "08125173278",
+      "pattern_id": "regular_5_2",
+      "ref_date": "2026-10-01",
+      "ref_cycle_index": 3,
+      "notes": "Jadwal reguler 5:2 (Sabtu-Minggu Libur)"
+    },
+    {
+      "id": 5,
+      "no": 4,
+      "name": "Ahmad Juwaini",
+      "sn": "23464",
+      "position": "Counterman",
+      "location": "CK BMB - Sitarum",
+      "phone": "085246366410",
+      "pattern_id": "regular_5_2",
+      "ref_date": "2026-10-01",
+      "ref_cycle_index": 0,
+      "notes": "Jadwal reguler 5:2 (Selasa-Rabu Libur agar standby tetap cover)"
+    }
+  ],
+  "overrides": {
+    "4:2026-10-01": {
+      "shift": "FB",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-02": {
+      "shift": "FB",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-03": {
+      "shift": "FB",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-08": {
+      "shift": "DN",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-09": {
+      "shift": "DN",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-15": {
+      "shift": "DN",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-16": {
+      "shift": "DN",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-23": {
+      "shift": "DN",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-24": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-29": {
+      "shift": "CT",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-30": {
+      "shift": "CT",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-05": {
+      "shift": "DN",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-12": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-10": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-01": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-01": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-01": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-02": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-02": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-02": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-03": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-03": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-03": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-04": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-04": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-04": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-04": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-05": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-05": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-05": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-06": {
+      "shift": "DN",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-06": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-06": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-06": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-07": {
+      "shift": "DN",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-07": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-07": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-07": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-08": {
+      "shift": "DN",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-08": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-08": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-09": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-09": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-09": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-10": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-10": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-10": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-11": {
+      "shift": "N",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-11": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-11": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-11": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-12": {
+      "shift": "N",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-12": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-12": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-13": {
+      "shift": "N",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-13": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-13": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-13": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-14": {
+      "shift": "N",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-14": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-14": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-14": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-15": {
+      "shift": "N",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-15": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-15": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-16": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-16": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-16": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-17": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-17": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-17": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-17": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-18": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-18": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-18": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-18": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-19": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-19": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-19": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-19": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-20": {
+      "shift": "DN",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-20": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-20": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-20": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-21": {
+      "shift": "DN",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-21": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-21": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-21": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-22": {
+      "shift": "DN",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-22": {
+      "shift": "DN",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-22": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-22": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-23": {
+      "shift": "DN",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-23": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-23": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-24": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-24": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-24": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-25": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-25": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-25": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-25": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-26": {
+      "shift": "N",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-26": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-26": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-26": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-27": {
+      "shift": "N",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-27": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-27": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-27": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-28": {
+      "shift": "N",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-28": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-28": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-28": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-29": {
+      "shift": "N",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-29": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-29": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-30": {
+      "shift": "N",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-30": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-30": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "2:2026-10-31": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "3:2026-10-31": {
+      "shift": "OFF",
+      "reason": "Contoh Roster Asli"
+    },
+    "4:2026-10-31": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    },
+    "5:2026-10-31": {
+      "shift": "D",
+      "reason": "Contoh Roster Asli"
+    }
+  },
+  "settings": {
+    "min_standby_counterman": 2,
+    "overtime_hours_d": 3,
+    "overtime_hours_n": 3,
+    "app_title": "Aplikasi Penataan Roster Modern",
+    "site_location": "CK BMB - Sitarum",
+    "admin_pin": "Trikindi##09"
+  }
+}

@@ -172,7 +172,7 @@
               </div>
             </div>
 
-            <!-- Row 3: Inventory Report & Battery Supply -->
+            <!-- Row 3: Inventory Report & Borrowing Parts -->
             <div id="card-inventory-report" class="bento-card" style="--card-accent: var(--accent-purple);">
               <div class="bento-card-icon">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -187,16 +187,35 @@
               </div>
             </div>
 
-            <div id="card-battery-supply" class="bento-card locked" style="--card-accent: var(--accent-locked);">
+            <div id="card-borrowing" class="bento-card" style="--card-accent: #FF9100;">
               <div class="bento-card-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
                 </svg>
               </div>
               <div>
-                <div class="bento-card-title">BATTERY SUPPLY</div>
-                <div class="bento-card-subtitle">Battery Form Supply</div>
+                <div class="bento-card-title">BORROWING PARTS</div>
+                <div class="bento-card-subtitle">MS Lists & Loan Tracker</div>
+              </div>
+            </div>
+
+            <!-- Row 4: Roster Schedule (Full Width) -->
+            <div id="card-roster" class="bento-card bento-card-full" style="--card-accent: #00E676;">
+              <div class="bento-card-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </div>
+              <div>
+                <div class="bento-card-title">ROSTER SCHEDULE</div>
+                <div class="bento-card-subtitle">Shift Rotation & OT Monitor</div>
               </div>
             </div>
           </div>
@@ -1119,6 +1138,182 @@
     </section>
 
     <!-- ========================================== -->
+    <!-- SCREEN: BORROWING PARTS (MS LISTS TRACKER) -->
+    <!-- ========================================== -->
+    <section id="screen-borrowing" class="view-screen">
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <button id="btn-borrowing-back" class="icon-btn" title="Kembali ke Beranda">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <div class="top-bar-title">BORROWING PARTS</div>
+        <div style="display: flex; align-items: center; gap: 4px;">
+          <button id="btn-borrowing-sync" class="icon-btn" title="Sinkronisasi Cloud Microsoft Lists">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+            </svg>
+          </button>
+          <button id="btn-borrowing-settings" class="icon-btn" title="Pengaturan Webhook">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Sync Progress Loading Line -->
+      <div id="borrowing-sync-progress" class="sync-progress-bar" style="display: none;"></div>
+
+      <div class="screen-content borrowing-content">
+        <!-- 3-Column KPI Header -->
+        <div class="borrowing-kpi-grid">
+          <div class="borrowing-kpi-card">
+            <div id="borrowing-kpi-open" class="borrowing-kpi-val" style="color: #60A5FA;">0</div>
+            <div class="borrowing-kpi-lbl">Open Pinjam</div>
+          </div>
+          <div class="borrowing-kpi-card">
+            <div id="borrowing-kpi-overdue" class="borrowing-kpi-val" style="color: var(--accent-red);">0</div>
+            <div class="borrowing-kpi-lbl">Lewat Janji</div>
+          </div>
+          <div class="borrowing-kpi-card">
+            <div id="borrowing-kpi-returned" class="borrowing-kpi-val" style="color: var(--accent-green);">0</div>
+            <div class="borrowing-kpi-lbl">Sudah Kembali</div>
+          </div>
+        </div>
+
+        <!-- Microsoft Forms New Request Action Banner -->
+        <div class="borrowing-new-banner">
+          <div class="borrowing-banner-left">
+            <div class="borrowing-banner-title">Pengajuan Pinjam Baru (MS Forms)</div>
+            <div class="borrowing-banner-desc">Formulir resmi permintaan pinjam antar-plant tercatat otomatis di Microsoft Lists.</div>
+          </div>
+          <div class="borrowing-banner-actions">
+            <button id="btn-borrowing-open-form" type="button" class="borrowing-btn-primary">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              <span>Buka Form</span>
+            </button>
+            <button id="btn-borrowing-copy-form" type="button" class="borrowing-btn-subtle" title="Salin link form">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span>Salin</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2-Segment Tabs: Monitoring (Open) vs History -->
+        <div class="borrowing-tab-bar">
+          <button id="tab-borrowing-monitoring" class="borrowing-tab-btn active" type="button">
+            <span>Monitoring</span>
+            <span id="borrowing-tab-open-pill" class="borrowing-tab-badge">0</span>
+          </button>
+          <button id="tab-borrowing-history" class="borrowing-tab-btn" type="button">
+            <span>History</span>
+            <span id="borrowing-tab-history-pill" class="borrowing-tab-badge">0</span>
+          </button>
+        </div>
+
+        <!-- Plant Filter Chips Scrollable Bar -->
+        <div id="borrowing-plant-chips" class="borrowing-filter-scroll"></div>
+
+        <!-- Search Input & Sort Selector Row -->
+        <div class="borrowing-search-sort-row">
+          <div class="search-box" style="flex: 1;">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input id="borrowing-search-input" type="text" class="search-input" placeholder="Cari PN, ID Pinjam, Requestor...">
+            <button id="borrowing-search-clear" class="search-clear-btn" style="display: none;">✕</button>
+          </div>
+          <select id="borrowing-sort-select" class="borrowing-sort-select">
+            <option value="OVERDUE_DESC">Urutkan: Overdue</option>
+            <option value="NEWEST">Urutkan: Terbaru</option>
+          </select>
+        </div>
+
+        <!-- Borrowing Cards List Container -->
+        <div id="borrowing-cards-list" class="borrowing-cards-list"></div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SCREEN: ROSTER SCHEDULE (SHIFT ROTATION)    -->
+    <!-- ========================================== -->
+    <section id="screen-roster" class="view-screen">
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <button id="btn-roster-back" class="icon-btn" title="Kembali ke Beranda">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <div class="top-bar-title">ROSTER SCHEDULE</div>
+        <button id="btn-roster-admin-toggle" class="roster-admin-toggle-btn" title="Buka Mode Admin untuk Ubah Shift">
+          <span id="roster-admin-icon">🔒</span>
+          <span id="roster-admin-status-text">Kunci Admin</span>
+        </button>
+      </header>
+
+      <div class="screen-content roster-content">
+        <!-- Month Navigation Switcher -->
+        <div class="roster-month-nav">
+          <button id="btn-roster-prev-month" class="roster-nav-arrow" title="Bulan Sebelumnya">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <div class="roster-month-display">
+            <div id="roster-month-label" class="roster-month-title">Oktober 2026</div>
+            <div class="roster-month-sub">Rotasi 5:2 & Night Shift Otomatis</div>
+          </div>
+          <button id="btn-roster-next-month" class="roster-nav-arrow" title="Bulan Berikutnya">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+          <button id="btn-roster-today" class="roster-today-btn" type="button">Bulan Ini</button>
+        </div>
+
+        <!-- 3-Column Today Summary KPI Strip -->
+        <div class="roster-kpi-strip">
+          <div class="roster-kpi-item">
+            <div class="roster-kpi-num" id="roster-kpi-total-personnel">4 Staf</div>
+            <div class="roster-kpi-label">Total Personel</div>
+          </div>
+          <div class="roster-kpi-item">
+            <div class="roster-kpi-num" id="roster-kpi-on-duty" style="color: var(--accent-green);">0 Orang</div>
+            <div class="roster-kpi-label">Hari Ini Dinas</div>
+          </div>
+          <div class="roster-kpi-item">
+            <div class="roster-kpi-num" id="roster-kpi-off" style="color: var(--accent-orange);">0 Orang</div>
+            <div class="roster-kpi-label">Hari Ini Libur</div>
+          </div>
+        </div>
+
+        <!-- Shift Color Legend Strip -->
+        <div class="roster-legend-bar">
+          <span class="roster-legend-pill pill-dn">DN (07-17)</span>
+          <span class="roster-legend-pill pill-d">D (Day)</span>
+          <span class="roster-legend-pill pill-n">N (19-05)</span>
+          <span class="roster-legend-pill pill-off">OFF</span>
+          <span class="roster-legend-pill pill-fb">FB</span>
+          <span class="roster-legend-pill pill-ct">CT</span>
+        </div>
+
+        <!-- Admin Toolbar Actions -->
+        <div class="roster-action-bar">
+          <button id="btn-roster-auto-balance" class="roster-balance-btn" type="button">
+            <span>⚡ Auto-Balance Weekend (2 Standby)</span>
+          </button>
+          <button id="btn-roster-reset" class="roster-reset-btn" type="button" title="Reset Roster">
+            <span>↺ Reset</span>
+          </button>
+        </div>
+
+        <!-- Employees List Container -->
+        <div id="roster-employees-container" class="roster-employees-container"></div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
     <!-- SETTINGS & CACHE MODAL DIALOG              -->
     <!-- ========================================== -->
     <div id="inventory-settings-modal" class="modal-backdrop" style="display: none;">
@@ -1319,6 +1514,109 @@
       </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- BORROWING PARTS SETTINGS MODAL             -->
+    <!-- ========================================== -->
+    <div id="borrowing-settings-modal" class="modal-backdrop" style="display: none;">
+      <div class="modal-card">
+        <div class="modal-title">Pengaturan Borrowing Parts</div>
+
+        <div class="modal-info-item">
+          <span style="font-size: 20px;">📋</span>
+          <div>
+            <div style="font-size: 10.5px; color: var(--text-secondary);">Sumber Data</div>
+            <div style="font-size: 12.5px; font-weight: 700; color: var(--text-white);">Microsoft Lists & Power Automate</div>
+          </div>
+        </div>
+
+        <div class="modal-info-item">
+          <span style="font-size: 20px;">💾</span>
+          <div>
+            <div style="font-size: 10.5px; color: var(--text-secondary);">Total Pinjaman Lokal</div>
+            <div id="modal-borrowing-cached-count" style="font-size: 13.5px; font-weight: 800; color: var(--accent-orange);">0 Data Tersimpan</div>
+          </div>
+        </div>
+
+        <div class="modal-info-item">
+          <span style="font-size: 20px;">🕒</span>
+          <div>
+            <div style="font-size: 10.5px; color: var(--text-secondary);">Sinkronisasi Terakhir</div>
+            <div id="modal-borrowing-last-sync" style="font-size: 12px; font-weight: 700; color: #60A5FA;">-</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 10px; margin-bottom: 12px;">
+          <label style="font-size: 11px; font-weight: 700; color: var(--text-secondary); display: block; margin-bottom: 4px;">
+            Endpoint Webhook Power Automate:
+          </label>
+          <input id="borrowing-webhook-input" type="text" class="search-input" style="width: 100%; font-size: 11px; font-family: monospace; padding: 8px 10px;" placeholder="https://...powerautomate.../invoke">
+        </div>
+
+        <button id="btn-save-borrowing-webhook" class="androheld-primary-btn" style="margin-bottom: 8px; width: 100%;">Simpan Webhook URL</button>
+        <button id="btn-reset-borrowing-data" class="btn-danger" style="margin-bottom: 8px; width: 100%;">Reset Data ke Baseline (40 Data)</button>
+        <button id="btn-close-borrowing-settings" class="btn-secondary" style="width: 100%;">Tutup</button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ROSTER ADMIN PIN SECURITY MODAL            -->
+    <!-- ========================================== -->
+    <div id="roster-admin-pin-modal" class="modal-backdrop" style="display: none;">
+      <div class="modal-card" style="max-width: 320px; text-align: center;">
+        <div style="font-size: 32px; margin-bottom: 8px;">🔒</div>
+        <div class="modal-title">Mode Admin Roster</div>
+        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">
+          Masukkan PIN keamanan untuk mengubah jadwal dan shift kerja (Default: <strong>1234</strong>).
+        </div>
+
+        <input id="roster-admin-pin-input" type="password" maxlength="8" class="search-input" style="text-align: center; font-size: 22px; letter-spacing: 6px; margin-bottom: 16px; width: 100%;" placeholder="••••">
+
+        <div style="display: flex; gap: 8px;">
+          <button id="btn-close-roster-pin" class="btn-secondary" style="flex: 1;">Batal</button>
+          <button id="btn-submit-roster-pin" class="androheld-primary-btn" style="flex: 1;">Buka Kunci</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ROSTER CELL EDIT MODAL                     -->
+    <!-- ========================================== -->
+    <div id="roster-cell-edit-modal" class="modal-backdrop" style="display: none;">
+      <div class="modal-card" style="max-width: 360px;">
+        <div id="cell-edit-title" class="modal-title">Ubah Shift Karyawan</div>
+        <div id="cell-edit-subtitle" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">Pilih shift pengganti:</div>
+
+        <div class="roster-shift-options-grid">
+          <button class="roster-shift-option-btn pill-dn" data-shift="DN">
+            <strong>DN</strong>
+            <span>Day Normal (07:00 - 17:00)</span>
+          </button>
+          <button class="roster-shift-option-btn pill-d" data-shift="D">
+            <strong>D</strong>
+            <span>Day Shift Reguler</span>
+          </button>
+          <button class="roster-shift-option-btn pill-n" data-shift="N">
+            <strong>N</strong>
+            <span>Night Shift (19:00 - 05:00)</span>
+          </button>
+          <button class="roster-shift-option-btn pill-off" data-shift="OFF">
+            <strong>OFF</strong>
+            <span>Hari Libur / Standby Off</span>
+          </button>
+          <button class="roster-shift-option-btn pill-fb" data-shift="FB">
+            <strong>FB</strong>
+            <span>Form Battery / Peminjaman</span>
+          </button>
+          <button class="roster-shift-option-btn pill-ct" data-shift="CT">
+            <strong>CT</strong>
+            <span>Cuti Tahunan / Izin</span>
+          </button>
+        </div>
+
+        <button id="btn-close-cell-edit" class="btn-secondary" style="width: 100%; margin-top: 14px;">Batal</button>
+      </div>
+    </div>
+
     <!-- Global Toast Container -->
     <div id="global-toast" class="toast-container"></div>
 
@@ -1336,15 +1634,17 @@
 
   <!-- Application Bootstrap -->
   <script type="module">
-    import { PinModule } from './js/modules/pinModule.js';
-    import { HomeModule } from './js/modules/homeModule.js';
-    import { MainToolsModule } from './js/modules/mainToolsModule.js';
-    import { InventoryModule } from './js/modules/inventoryModule.js';
-    import { WipModule } from './js/modules/wipModule.js';
-    import { QcHoseModule } from './js/modules/qcHoseModule.js';
-    import { StockModule } from './js/modules/stockModule.js';
-    import { ScannerService } from './js/services/scannerService.js';
-    import { OcrService } from './js/services/ocrService.js';
+    import { PinModule } from './js/modules/pinModule.js?v=13';
+    import { HomeModule } from './js/modules/homeModule.js?v=13';
+    import { MainToolsModule } from './js/modules/mainToolsModule.js?v=13';
+    import { InventoryModule } from './js/modules/inventoryModule.js?v=13';
+    import { WipModule } from './js/modules/wipModule.js?v=13';
+    import { QcHoseModule } from './js/modules/qcHoseModule.js?v=13';
+    import { StockModule } from './js/modules/stockModule.js?v=13';
+    import { BorrowingModule } from './js/modules/borrowingModule.js?v=13';
+    import { RosterModule } from './js/modules/rosterModule.js?v=13';
+    import { ScannerService } from './js/services/scannerService.js?v=13';
+    import { OcrService } from './js/services/ocrService.js?v=13';
 
     // Screen Router
     function navigateTo(screenId) {
@@ -1369,6 +1669,12 @@
       } else if (screenId === 'stock') {
         document.getElementById('screen-stock').classList.add('active');
         window.history.pushState({ screen: 'stock' }, 'Stock & Route Tools', '#stock');
+      } else if (screenId === 'borrowing') {
+        document.getElementById('screen-borrowing').classList.add('active');
+        window.history.pushState({ screen: 'borrowing' }, 'Borrowing Parts', '#borrowing');
+      } else if (screenId === 'roster') {
+        document.getElementById('screen-roster').classList.add('active');
+        window.history.pushState({ screen: 'roster' }, 'Roster Schedule', '#roster');
       } else if (screenId === 'pin') {
         document.getElementById('screen-pin').classList.add('active');
       } else {
@@ -1376,6 +1682,9 @@
         window.history.pushState({ screen: 'home' }, 'Home', '#home');
       }
     }
+
+    // Expose navigateTo globally
+    window.navigateTo = navigateTo;
 
     // Handle Browser Back Button / Gesture
     window.addEventListener('popstate', (e) => {
@@ -1395,6 +1704,10 @@
         document.getElementById('screen-qc').classList.add('active');
       } else if (e.state && e.state.screen === 'stock') {
         document.getElementById('screen-stock').classList.add('active');
+      } else if (e.state && e.state.screen === 'borrowing') {
+        document.getElementById('screen-borrowing').classList.add('active');
+      } else if (e.state && e.state.screen === 'roster') {
+        document.getElementById('screen-roster').classList.add('active');
       } else {
         document.getElementById('screen-home').classList.add('active');
       }
@@ -1420,6 +1733,8 @@
       WipModule.init();
       QcHoseModule.init();
       StockModule.init();
+      BorrowingModule.init();
+      RosterModule.init();
       ScannerService.init();
       OcrService.init();
 
@@ -1429,6 +1744,8 @@
       document.getElementById('btn-wip-back').addEventListener('click', () => navigateTo('home'));
       document.getElementById('btn-qc-back').addEventListener('click', () => navigateTo('home'));
       document.getElementById('btn-stock-back').addEventListener('click', () => navigateTo('home'));
+      document.getElementById('btn-borrowing-back').addEventListener('click', () => navigateTo('home'));
+      document.getElementById('btn-roster-back').addEventListener('click', () => navigateTo('home'));
 
       // Search Inputs for Evidence In / Out
       const inSearch = document.getElementById('wip-in-evidence-search');
@@ -1493,7 +1810,7 @@
 
       // Register PWA Service Worker with auto-update
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js?v=12').then((reg) => {
+        navigator.serviceWorker.register('./sw.js?v=13').then((reg) => {
           reg.update();
         }).catch((err) => {
           console.warn('SW registration failed:', err);

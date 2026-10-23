@@ -14,11 +14,24 @@ export const HomeModule = {
     const cardWipTools = document.getElementById('card-wip-tools');
     const cardQcHose = document.getElementById('card-qc-hose');
     const cardInventory = document.getElementById('card-inventory-report');
-    const cardBattery = document.getElementById('card-battery-supply');
+    const cardBorrowing = document.getElementById('card-borrowing');
+    const cardRoster = document.getElementById('card-roster');
 
     if (cardInventory) {
       cardInventory.addEventListener('click', () => {
         this.onNavigate('inventory');
+      });
+    }
+
+    if (cardBorrowing) {
+      cardBorrowing.addEventListener('click', () => {
+        this.onNavigate('borrowing');
+      });
+    }
+
+    if (cardRoster) {
+      cardRoster.addEventListener('click', () => {
+        this.onNavigate('roster');
       });
     }
 
@@ -43,12 +56,6 @@ export const HomeModule = {
     if (cardQcHose) {
       cardQcHose.addEventListener('click', () => {
         this.onNavigate('qc');
-      });
-    }
-
-    if (cardBattery) {
-      cardBattery.addEventListener('click', () => {
-        this.showToast("Modul Battery Form Supply masih terkunci.");
       });
     }
   },

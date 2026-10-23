@@ -4,7 +4,7 @@
 
 export const CONFIG = {
   APP_NAME: "AndroHeld Enterprise",
-  VERSION: "5.0.0 Web/PWA",
+  VERSION: "5.1.0 Web/PWA",
 
   // Supabase Cloud (Inventory Report)
   SUPABASE_URL: "https://culgtxrkcdkkcsemocym.supabase.co",

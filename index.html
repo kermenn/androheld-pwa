@@ -16,10 +16,10 @@
   <link rel="apple-touch-icon" href="./assets/icon.png">
   <link rel="icon" type="image/png" href="./assets/icon.png">
 
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="./css/tokens.css">
-  <link rel="stylesheet" href="./css/components.css">
-  <link rel="stylesheet" href="./css/app.css">
+  <!-- Stylesheets with Cache Buster -->
+  <link rel="stylesheet" href="./css/tokens.css?v=12">
+  <link rel="stylesheet" href="./css/components.css?v=12">
+  <link rel="stylesheet" href="./css/app.css?v=12">
 
   <!-- Offline Camera Barcode & QR Scanner Library -->
   <script src="./js/lib/html5-qrcode.min.js"></script>
@@ -204,7 +204,7 @@
 
         <!-- Footer App Version -->
         <div class="home-footer-info">
-          <div class="home-version-text">AndroHeld v5.0.0 (Web / PWA)</div>
+          <div class="home-version-text">AndroHeld v5.1.0 (Web / PWA)</div>
         </div>
       </div>
     </section>
@@ -1491,9 +1491,11 @@
         });
       }
 
-      // Register PWA Service Worker
+      // Register PWA Service Worker with auto-update
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js').catch((err) => {
+        navigator.serviceWorker.register('./sw.js?v=12').then((reg) => {
+          reg.update();
+        }).catch((err) => {
           console.warn('SW registration failed:', err);
         });
       }

@@ -11,10 +11,17 @@ let selectedItem = null;
 let searchDebounceTimer = null;
 let isSyncing = false;
 
+// Not Ready Bottom Sheet States (Mirroring Jetpack Compose InventoryAnalysisScreen.kt)
+let notReadySelectedTab = 0; // 0 = All Reservasi, 1 = Monthly Plan
+let notReadyStatusFilter = 'ALL'; // 'ALL', 'NEED REFILL', 'FOLLOW UP STO'
+let notReadyQuery = '';
+let notReadySearchDebounceTimer = null;
+
 export const InventoryModule = {
   init() {
     this.renderKpi(currentKpi);
     this.renderCacheStats();
+    this.updateNotReadyBanner();
     this.bindEvents();
 
     // 1. Silent Background Revalidation on open (Stale-While-Revalidate)
@@ -81,9 +88,137 @@ export const InventoryModule = {
         localItems = [];
         currentKpi = StorageService.getKpi();
         this.renderKpi(currentKpi);
+        this.updateNotReadyBanner();
         this.clearSearchResults();
         document.getElementById('inventory-settings-modal').style.display = 'none';
         this.showToast("Cache lokal berhasil dihapus.");
+      });
+    }
+
+    // --- Not Ready Feature Event Bindings ---
+    const notReadyBanner = document.getElementById('btn-open-notready');
+    if (notReadyBanner) {
+      notReadyBanner.addEventListener('click', () => {
+        this.openNotReadyModal(0);
+      });
+    }
+
+    // Quick open from Readiness Donut Cards
+    const donutWoAllCard = document.getElementById('donut-circle-wo-all')?.closest('.donut-card');
+    if (donutWoAllCard) {
+      donutWoAllCard.style.cursor = 'pointer';
+      donutWoAllCard.title = "Ketuk untuk melihat part Not Ready All Reservasi";
+      donutWoAllCard.addEventListener('click', () => {
+        this.openNotReadyModal(0);
+      });
+    }
+
+    const donutWoMpCard = document.getElementById('donut-circle-wo-mp')?.closest('.donut-card');
+    if (donutWoMpCard) {
+      donutWoMpCard.style.cursor = 'pointer';
+      donutWoMpCard.title = "Ketuk untuk melihat part Not Ready Monthly Plan";
+      donutWoMpCard.addEventListener('click', () => {
+        this.openNotReadyModal(1);
+      });
+    }
+
+    // Close Not Ready Modal
+    const closeNotReadyBtn = document.getElementById('btn-close-notready-modal');
+    if (closeNotReadyBtn) {
+      closeNotReadyBtn.addEventListener('click', () => {
+        this.closeNotReadyModal();
+      });
+    }
+
+    const notReadyModal = document.getElementById('not-ready-modal');
+    if (notReadyModal) {
+      notReadyModal.addEventListener('click', (e) => {
+        if (e.target === notReadyModal) {
+          this.closeNotReadyModal();
+        }
+      });
+    }
+
+    // Tabs Switcher inside Not Ready Modal
+    const tabNotReadyAll = document.getElementById('tab-notready-all');
+    const tabNotReadyMp = document.getElementById('tab-notready-mp');
+
+    if (tabNotReadyAll) {
+      tabNotReadyAll.addEventListener('click', () => {
+        notReadySelectedTab = 0;
+        tabNotReadyAll.classList.add('active');
+        if (tabNotReadyMp) tabNotReadyMp.classList.remove('active');
+        this.renderNotReadyModalContent();
+      });
+    }
+
+    if (tabNotReadyMp) {
+      tabNotReadyMp.addEventListener('click', () => {
+        notReadySelectedTab = 1;
+        tabNotReadyMp.classList.add('active');
+        if (tabNotReadyAll) tabNotReadyAll.classList.remove('active');
+        this.renderNotReadyModalContent();
+      });
+    }
+
+    // Filter Chips inside Not Ready Modal
+    const chipFilterAll = document.getElementById('chip-filter-all');
+    const chipFilterRefill = document.getElementById('chip-filter-refill');
+    const chipFilterSto = document.getElementById('chip-filter-sto');
+
+    const updateChipActiveStyles = () => {
+      if (chipFilterAll) chipFilterAll.classList.toggle('active', notReadyStatusFilter === 'ALL');
+      if (chipFilterRefill) chipFilterRefill.classList.toggle('active', notReadyStatusFilter === 'NEED REFILL');
+      if (chipFilterSto) chipFilterSto.classList.toggle('active', notReadyStatusFilter === 'FOLLOW UP STO');
+    };
+
+    if (chipFilterAll) {
+      chipFilterAll.addEventListener('click', () => {
+        notReadyStatusFilter = 'ALL';
+        updateChipActiveStyles();
+        this.renderNotReadyModalContent();
+      });
+    }
+
+    if (chipFilterRefill) {
+      chipFilterRefill.addEventListener('click', () => {
+        notReadyStatusFilter = notReadyStatusFilter === 'NEED REFILL' ? 'ALL' : 'NEED REFILL';
+        updateChipActiveStyles();
+        this.renderNotReadyModalContent();
+      });
+    }
+
+    if (chipFilterSto) {
+      chipFilterSto.addEventListener('click', () => {
+        notReadyStatusFilter = notReadyStatusFilter === 'FOLLOW UP STO' ? 'ALL' : 'FOLLOW UP STO';
+        updateChipActiveStyles();
+        this.renderNotReadyModalContent();
+      });
+    }
+
+    // Search Input inside Not Ready Modal
+    const notReadySearchInput = document.getElementById('notready-search-input');
+    const notReadyClearBtn = document.getElementById('notready-search-clear');
+
+    if (notReadySearchInput) {
+      notReadySearchInput.addEventListener('input', (e) => {
+        const val = e.target.value;
+        if (notReadyClearBtn) notReadyClearBtn.style.display = val ? 'block' : 'none';
+
+        clearTimeout(notReadySearchDebounceTimer);
+        notReadySearchDebounceTimer = setTimeout(() => {
+          notReadyQuery = val.trim();
+          this.renderNotReadyModalContent();
+        }, 150);
+      });
+    }
+
+    if (notReadyClearBtn) {
+      notReadyClearBtn.addEventListener('click', () => {
+        if (notReadySearchInput) notReadySearchInput.value = '';
+        notReadyClearBtn.style.display = 'none';
+        notReadyQuery = '';
+        this.renderNotReadyModalContent();
       });
     }
   },
@@ -328,7 +463,10 @@ export const InventoryModule = {
     if (isSyncing) return;
     isSyncing = true;
     const syncBtn = document.getElementById('btn-inventory-sync');
+    const progressBar = document.getElementById('inventory-sync-progress');
+
     if (syncBtn) syncBtn.classList.add('rotating');
+    if (progressBar) progressBar.style.display = 'block';
     if (!silent) this.showToast("Menghubungkan ke Supabase Cloud...");
 
     try {
@@ -348,8 +486,10 @@ export const InventoryModule = {
         StorageService.saveSyncTime(dateStr, Date.now());
 
         this.renderCacheStats();
+        this.updateNotReadyBanner();
         if (!silent) this.showToast(`Sinkronisasi sukses! ${items.length} part tersimpan di lokal.`);
       } else {
+        this.updateNotReadyBanner();
         if (!silent) this.showToast("KPI berhasil disinkronisasi!");
       }
     } catch (err) {
@@ -358,6 +498,7 @@ export const InventoryModule = {
     } finally {
       isSyncing = false;
       if (syncBtn) syncBtn.classList.remove('rotating');
+      if (progressBar) progressBar.style.display = 'none';
     }
   },
 
@@ -387,5 +528,248 @@ export const InventoryModule = {
     setTimeout(() => {
       toast.classList.remove('show');
     }, 3000);
+  },
+
+  // =========================================================================
+  // NOT READY PARTS LOGIC (Mirroring Compose NotReadyPartsBottomSheet)
+  // =========================================================================
+  getNotReadyLists() {
+    const allReservasiList = localItems.filter(item => {
+      const status = (item.woReadinessStatus || '').trim().toUpperCase();
+      const hasAlloc = item.hasWoAllocation || (item.woReqQty > 0) || (status !== 'NO ALLOCATION' && status !== 'READY STOCK');
+      return hasAlloc && (status === 'FOLLOW UP STO' || status === 'NEED REFILL');
+    });
+
+    const mpList = localItems.filter(item => {
+      const status = (item.woReadinessStatusMp || '').trim().toUpperCase();
+      const hasAlloc = item.isMonthlyPlan || (item.woReqQtyMp > 0) || (status !== 'NO MP ALLOCATION' && status !== 'READY STOCK');
+      return hasAlloc && (status === 'FOLLOW UP STO' || status === 'NEED REFILL');
+    });
+
+    return { allReservasiList, mpList };
+  },
+
+  updateNotReadyBanner() {
+    const { allReservasiList } = this.getNotReadyLists();
+    const bannerCountEl = document.getElementById('notready-banner-count');
+    if (bannerCountEl) {
+      bannerCountEl.textContent = `${allReservasiList.length} PART`;
+    }
+  },
+
+  openNotReadyModal(tabIndex = 0) {
+    notReadySelectedTab = tabIndex;
+    notReadyStatusFilter = 'ALL';
+    notReadyQuery = '';
+
+    const searchInput = document.getElementById('notready-search-input');
+    const clearBtn = document.getElementById('notready-search-clear');
+    if (searchInput) searchInput.value = '';
+    if (clearBtn) clearBtn.style.display = 'none';
+
+    // Update tab buttons
+    const tabAll = document.getElementById('tab-notready-all');
+    const tabMp = document.getElementById('tab-notready-mp');
+    if (tabAll) tabAll.classList.toggle('active', notReadySelectedTab === 0);
+    if (tabMp) tabMp.classList.toggle('active', notReadySelectedTab === 1);
+
+    // Update filter chips
+    const chipAll = document.getElementById('chip-filter-all');
+    const chipRefill = document.getElementById('chip-filter-refill');
+    const chipSto = document.getElementById('chip-filter-sto');
+    if (chipAll) chipAll.classList.add('active');
+    if (chipRefill) chipRefill.classList.remove('active');
+    if (chipSto) chipSto.classList.remove('active');
+
+    this.renderNotReadyModalContent();
+    document.getElementById('not-ready-modal').style.display = 'flex';
+  },
+
+  closeNotReadyModal() {
+    const modal = document.getElementById('not-ready-modal');
+    if (modal) modal.style.display = 'none';
+  },
+
+  renderNotReadyModalContent() {
+    const { allReservasiList, mpList } = this.getNotReadyLists();
+
+    // Update tab counters
+    const tabAllCountEl = document.getElementById('notready-tab-all-count');
+    const tabMpCountEl = document.getElementById('notready-tab-mp-count');
+    if (tabAllCountEl) tabAllCountEl.textContent = allReservasiList.length;
+    if (tabMpCountEl) tabMpCountEl.textContent = mpList.length;
+
+    // Determine current active list
+    const currentBaseList = notReadySelectedTab === 1 ? mpList : allReservasiList;
+
+    // Calculate counts for chips
+    const countNeedRefill = currentBaseList.filter(item => {
+      const status = (notReadySelectedTab === 1 ? item.woReadinessStatusMp : item.woReadinessStatus || '').trim().toUpperCase();
+      return status === 'NEED REFILL';
+    }).length;
+
+    const countFollowUpSto = currentBaseList.filter(item => {
+      const status = (notReadySelectedTab === 1 ? item.woReadinessStatusMp : item.woReadinessStatus || '').trim().toUpperCase();
+      return status === 'FOLLOW UP STO';
+    }).length;
+
+    // Update chip counter pills
+    const chipAllCountEl = document.getElementById('notready-chip-all-count');
+    const chipRefillCountEl = document.getElementById('notready-chip-refill-count');
+    const chipStoCountEl = document.getElementById('notready-chip-sto-count');
+
+    if (chipAllCountEl) chipAllCountEl.textContent = currentBaseList.length;
+    if (chipRefillCountEl) chipRefillCountEl.textContent = countNeedRefill;
+    if (chipStoCountEl) chipStoCountEl.textContent = countFollowUpSto;
+
+    // Apply Filter & Search
+    const filteredList = currentBaseList.filter(item => {
+      const status = (notReadySelectedTab === 1 ? item.woReadinessStatusMp : item.woReadinessStatus || '').trim().toUpperCase();
+
+      if (notReadyStatusFilter === 'NEED REFILL' && status !== 'NEED REFILL') return false;
+      if (notReadyStatusFilter === 'FOLLOW UP STO' && status !== 'FOLLOW UP STO') return false;
+
+      if (notReadyQuery) {
+        const cleanQuery = notReadyQuery.toUpperCase().replace(/-/g, '').replace(/:/g, '');
+        const pn = (item.partNumber || '').toUpperCase().replace(/-/g, '').replace(/:/g, '');
+        const desc = (item.description || '').toUpperCase();
+        const basePn = (item.basePn || '').toUpperCase().replace(/-/g, '').replace(/:/g, '');
+
+        let woMatches = false;
+        if (item.woAllocations && Array.isArray(item.woAllocations)) {
+          woMatches = item.woAllocations.some(a => String(a.orderNumber || a.order_number || '').includes(notReadyQuery));
+        }
+
+        return pn.includes(cleanQuery) || basePn.includes(cleanQuery) || desc.includes(notReadyQuery.toUpperCase()) || woMatches;
+      }
+
+      return true;
+    });
+
+    const cardsContainer = document.getElementById('notready-cards-container');
+    if (!cardsContainer) return;
+
+    if (filteredList.length === 0) {
+      cardsContainer.innerHTML = `
+        <div class="notready-empty-card">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2" style="margin-bottom: 10px;">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <div style="font-size: 14px; font-weight: 700; color: #FFFFFF;">
+            ${notReadyQuery ? `Tidak ada part cocok dengan '${notReadyQuery}'` : 'Seluruh Part Number Ready!'}
+          </div>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
+            ${notReadyQuery ? 'Coba ubah kata kunci pencarian atau filter status.' : 'Tidak ada part dengan defisit stok atau status Not Ready.'}
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    cardsContainer.innerHTML = filteredList.map(item => {
+      const status = (notReadySelectedTab === 1 ? item.woReadinessStatusMp : item.woReadinessStatus || '').trim().toUpperCase();
+      const isRefill = status === 'NEED REFILL';
+      const statusClass = isRefill ? 'status-need-refill' : 'status-follow-up-sto';
+      const badgeClass = isRefill ? 'need-refill' : 'follow-up-sto';
+      const badgeText = isRefill ? '🔴 NEED REFILL' : '🟠 FOLLOW UP STO';
+
+      const reqQty = notReadySelectedTab === 1 ? (item.woReqQtyMp || item.woReqQty || 0) : (item.woReqQty || 0);
+      const stockAtp = item.stockAtp || 0;
+      const defisit = Math.max(0, reqQty - stockAtp);
+      const inTransitSto = item.inTransitStoQty || 0;
+
+      // Extract WO list
+      let woHtml = '';
+      if (item.woAllocations && Array.isArray(item.woAllocations) && item.woAllocations.length > 0) {
+        const woNumbers = item.woAllocations.map(a => a.orderNumber || a.order_number).filter(Boolean);
+        if (woNumbers.length > 0) {
+          woHtml = `
+            <div class="notready-wo-row">
+              <span class="notready-wo-label">WO:</span>
+              ${woNumbers.map(wo => `<span class="notready-wo-tag">#${wo}</span>`).join('')}
+            </div>
+          `;
+        }
+      }
+
+      return `
+        <div class="notready-card ${statusClass}" data-pn="${item.partNumber}">
+          <div class="notready-card-header">
+            <div class="notready-pn-wrap">
+              <span class="notready-card-pn">${item.partNumber}</span>
+              ${item.isMonthlyPlan ? '<span class="mp-badge">MP</span>' : ''}
+            </div>
+            <span class="notready-status-badge ${badgeClass}">${badgeText}</span>
+          </div>
+
+          <div class="notready-card-desc">${item.description || 'Tanpa deskripsi part'}</div>
+
+          <div class="notready-metric-strip">
+            <div class="notready-metric-item">
+              <span class="notready-metric-label">Req WO</span>
+              <span class="notready-metric-val">${Math.round(reqQty)} ${item.uom || ''}</span>
+            </div>
+            <div class="notready-metric-item">
+              <span class="notready-metric-label">Stok ATP</span>
+              <span class="notready-metric-val" style="color: ${stockAtp > 0 ? 'var(--accent-green)' : 'var(--accent-red)'};">
+                ${Math.round(stockAtp)} ${item.uom || ''}
+              </span>
+            </div>
+            <div class="notready-metric-item">
+              <span class="notready-metric-label">Defisit</span>
+              <span class="notready-metric-val" style="color: var(--accent-red); font-weight: 800;">
+                -${Math.round(defisit)} ${item.uom || ''}
+              </span>
+            </div>
+            <div class="notready-metric-item">
+              <span class="notready-metric-label">In-Transit STO</span>
+              <span class="notready-metric-val" style="color: ${inTransitSto > 0 ? 'var(--accent-yellow)' : 'var(--text-muted)'};">
+                ${Math.round(inTransitSto)} ${item.uom || ''}
+              </span>
+            </div>
+          </div>
+
+          ${woHtml}
+
+          <div class="notready-action-prompt">
+            <span>Sentuh untuk detail lengkap</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Attach click handlers to open detailed view
+    cardsContainer.querySelectorAll('.notready-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const pn = card.getAttribute('data-pn');
+        const item = localItems.find(i => i.partNumber === pn);
+        if (item) {
+          this.closeNotReadyModal();
+          this.renderPartDetail(item);
+
+          // Populate main search input for quick reference
+          const mainSearchInput = document.getElementById('inventory-search-input');
+          const clearBtn = document.getElementById('search-clear-btn');
+          if (mainSearchInput) mainSearchInput.value = item.partNumber;
+          if (clearBtn) clearBtn.style.display = 'block';
+
+          // Ensure search states display
+          document.getElementById('search-chips-container').style.display = 'none';
+          document.getElementById('search-empty-state').style.display = 'none';
+          document.getElementById('search-not-found-state').style.display = 'none';
+
+          // Smooth scroll to detail container
+          const detailContainer = document.getElementById('part-detail-container');
+          if (detailContainer) {
+            detailContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      });
+    });
   }
 };
+

@@ -2256,6 +2256,489 @@
   color: var(--accent-primary);
 }
 
+/* ==========================================================================
+   Not Ready Feature Styles (Mirroring Compose InventoryAnalysisScreen.kt)
+   ========================================================================== */
+
+/* 1. Pinned Linear Sync Progress Bar */
+.sync-linear-progress {
+  height: 3px;
+  width: 100%;
+  background: rgba(255, 179, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+  z-index: 50;
+  flex-shrink: 0;
+}
+
+.sync-linear-progress::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 45%;
+  background: linear-gradient(90deg, transparent, var(--accent-primary), var(--accent-cyan), transparent);
+  animation: syncProgressPulse 1.2s infinite ease-in-out;
+}
+
+@keyframes syncProgressPulse {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(350%); }
+}
+
+/* 2. Not Ready Parts Alert Banner */
+.notready-banner {
+  background: #1E1416;
+  border: 1px solid rgba(239, 83, 80, 0.45);
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+  margin-top: 14px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.notready-banner:hover,
+.notready-banner:active {
+  background: #26171A;
+  border-color: #EF5350;
+  transform: translateY(-1px);
+}
+
+.notready-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.notready-icon-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(239, 83, 80, 0.2);
+  color: #EF5350;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.notready-banner-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.notready-banner-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.notready-banner-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-white);
+  letter-spacing: 0.3px;
+}
+
+.notready-counter-pill {
+  background: #EF5350;
+  color: #FFFFFF;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 1px 7px;
+  border-radius: 10px;
+  letter-spacing: 0.2px;
+}
+
+.notready-banner-subtitle {
+  font-size: 10.5px;
+  color: rgba(255, 138, 128, 0.9);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notready-arrow-icon {
+  color: #EF5350;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+/* 3. Bottom Sheet Modal System */
+.bottom-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+.bottom-sheet-container {
+  background: #14141A;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border-top: 1px solid #2C2C3A;
+  border-left: 1px solid #2C2C3A;
+  border-right: 1px solid #2C2C3A;
+  height: 88vh;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 16px calc(var(--sab) + 16px) 16px;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7);
+  animation: modalSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+@keyframes modalSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.bottom-sheet-drag-handle {
+  width: 38px;
+  height: 4px;
+  background: #454555;
+  border-radius: 4px;
+  margin: 0 auto 12px auto;
+  flex-shrink: 0;
+}
+
+.bottom-sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.bottom-sheet-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.notready-header-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(239, 83, 80, 0.2);
+  color: #EF5350;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bottom-sheet-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-white);
+  letter-spacing: 0.4px;
+}
+
+.bottom-sheet-subtitle {
+  font-size: 10.5px;
+  color: var(--text-secondary);
+  margin-top: 1px;
+}
+
+/* Tabs: All Reservasi vs Monthly Plan */
+.notready-tab-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #1B1B24;
+  border: 1px solid #2C2C3A;
+  border-radius: var(--radius-md);
+  padding: 3px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.notready-tab-btn {
+  background: none;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+  user-select: none;
+}
+
+.notready-tab-btn.active[data-tab="0"] {
+  background: #242434;
+  color: var(--accent-cyan);
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(0, 229, 255, 0.18);
+}
+
+.notready-tab-btn.active[data-tab="1"] {
+  background: #242434;
+  color: var(--accent-magenta);
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(213, 0, 249, 0.18);
+}
+
+/* Filter Chips Bar */
+.notready-filter-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  flex-shrink: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.notready-filter-row::-webkit-scrollbar {
+  display: none;
+}
+
+.notready-filter-chip {
+  background: #1B1B24;
+  border: 1px solid #2C2C3A;
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.notready-filter-chip.active {
+  background: #333345;
+  color: #FFFFFF;
+  border-color: #707090;
+}
+
+.notready-filter-chip.chip-refill {
+  color: #EF9A9A;
+}
+
+.notready-filter-chip.chip-refill.active {
+  background: rgba(198, 40, 40, 0.35);
+  border-color: #EF5350;
+  color: #FFCDD2;
+}
+
+.notready-filter-chip.chip-sto {
+  color: #FFD54F;
+}
+
+.notready-filter-chip.chip-sto.active {
+  background: rgba(245, 127, 23, 0.35);
+  border-color: #FFB74D;
+  color: #FFF9C4;
+}
+
+/* Search Box inside Modal */
+.notready-search-wrap {
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.notready-search-box {
+  height: 44px;
+  background: #161620;
+  border: 1px solid #2C2C38;
+}
+
+.notready-search-box:focus-within {
+  border-color: var(--accent-cyan);
+}
+
+/* Scrollable Container for Cards */
+.notready-cards-scroll {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Not Ready Part Card */
+.notready-card {
+  background: #181822;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: 13px 14px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.notready-card:hover,
+.notready-card:active {
+  background: #1E1E2C;
+  border-color: var(--border-active);
+  transform: translateY(-1px);
+}
+
+.notready-card.status-need-refill {
+  border-color: rgba(239, 83, 80, 0.5);
+}
+
+.notready-card.status-follow-up-sto {
+  border-color: rgba(255, 183, 77, 0.5);
+}
+
+.notready-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.notready-pn-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.notready-card-pn {
+  font-family: monospace;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.notready-status-badge {
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.notready-status-badge.need-refill {
+  background: rgba(198, 40, 40, 0.25);
+  color: #FF8A80;
+  border: 1px solid #EF5350;
+}
+
+.notready-status-badge.follow-up-sto {
+  background: rgba(245, 127, 23, 0.25);
+  color: #FFD54F;
+  border: 1px solid #FFB74D;
+}
+
+.notready-card-desc {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 9px;
+}
+
+/* Metric Strip (4 columns: Req WO, Stok ATP, Defisit, In-Transit STO) */
+.notready-metric-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: #101017;
+  border: 1px solid #262635;
+  border-radius: 8px;
+  padding: 8px 6px;
+  text-align: center;
+  margin-bottom: 8px;
+  gap: 4px;
+}
+
+.notready-metric-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.notready-metric-label {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.notready-metric-val {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+/* WO Badges inside Card */
+.notready-wo-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.notready-wo-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.notready-wo-tag {
+  background: #22222E;
+  color: var(--accent-cyan);
+  font-size: 9.5px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.notready-action-prompt {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: #FF8A80;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.notready-empty-card {
+  text-align: center;
+  padding: 36px 16px;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+
 
 
 

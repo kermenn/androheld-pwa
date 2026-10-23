@@ -436,6 +436,9 @@
         </div>
       </header>
 
+      <!-- Sync Linear Progress Bar (Pinned Under Top Bar) -->
+      <div id="inventory-sync-progress" class="sync-linear-progress" style="display: none;"></div>
+
       <!-- Scrollable Content -->
       <div class="screen-scroll-body">
 
@@ -518,6 +521,29 @@
             </div>
             <div id="donut-wo-mp-sub" class="donut-subtitle">806/930 Ready</div>
           </div>
+        </div>
+
+        <!-- Not Ready Parts Alert Banner (Mirroring Compose Feature) -->
+        <div id="btn-open-notready" class="notready-banner" role="button" tabindex="0" title="Ketuk untuk melihat detail part number Not Ready">
+          <div class="notready-banner-left">
+            <div class="notready-icon-badge">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </div>
+            <div class="notready-banner-info">
+              <div class="notready-banner-title-row">
+                <span class="notready-banner-title">DETAIL PART NUMBER NOT READY</span>
+                <span id="notready-banner-count" class="notready-counter-pill">0 PART</span>
+              </div>
+              <div class="notready-banner-subtitle">Ketuk untuk melihat rincian Follow Up STO & Need Refill</div>
+            </div>
+          </div>
+          <svg class="notready-arrow-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
         </div>
 
         <!-- 3. Search & Scanner Box -->
@@ -1127,6 +1153,79 @@
 
         <button id="btn-clear-cache" class="btn-danger">Hapus Cache Lokal</button>
         <button id="btn-close-modal" class="btn-secondary">Tutup</button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- NOT READY PARTS BOTTOM SHEET MODAL         -->
+    <!-- ========================================== -->
+    <div id="not-ready-modal" class="bottom-sheet-backdrop" style="display: none;">
+      <div class="bottom-sheet-container">
+        <!-- Drag Handle Indicator -->
+        <div class="bottom-sheet-drag-handle"></div>
+
+        <!-- Header -->
+        <div class="bottom-sheet-header">
+          <div class="bottom-sheet-header-left">
+            <div class="notready-header-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </div>
+            <div>
+              <div class="bottom-sheet-title">PART NUMBER NOT READY</div>
+              <div class="bottom-sheet-subtitle">Daftar part number yang stoknya belum mencukupi alokasi WO</div>
+            </div>
+          </div>
+          <button id="btn-close-notready-modal" class="icon-btn" title="Tutup Modal" style="color: var(--text-secondary);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Tabs: All Reservasi vs Monthly Plan -->
+        <div class="notready-tab-bar">
+          <button id="tab-notready-all" class="notready-tab-btn active" data-tab="0">
+            All Reservasi (<span id="notready-tab-all-count">0</span>)
+          </button>
+          <button id="tab-notready-mp" class="notready-tab-btn" data-tab="1">
+            Monthly Plan (<span id="notready-tab-mp-count">0</span>)
+          </button>
+        </div>
+
+        <!-- Filter Chips Bar: Semua, Need Refill, Follow Up STO -->
+        <div class="notready-filter-row">
+          <button id="chip-filter-all" class="notready-filter-chip active" data-status="ALL">
+            Semua (<span id="notready-chip-all-count">0</span>)
+          </button>
+          <button id="chip-filter-refill" class="notready-filter-chip chip-refill" data-status="NEED REFILL">
+            🔴 Need Refill (<span id="notready-chip-refill-count">0</span>)
+          </button>
+          <button id="chip-filter-sto" class="notready-filter-chip chip-sto" data-status="FOLLOW UP STO">
+            🟠 Follow Up STO (<span id="notready-chip-sto-count">0</span>)
+          </button>
+        </div>
+
+        <!-- Search Box inside Modal -->
+        <div class="notready-search-wrap">
+          <div class="search-box notready-search-box">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input id="notready-search-input" type="text" class="search-input" placeholder="Cari PN, deskripsi, atau no. WO..." autocomplete="off">
+            <button id="notready-search-clear" class="search-clear-btn" style="display: none;">✕</button>
+          </div>
+        </div>
+
+        <!-- Scrollable List of Not Ready Cards -->
+        <div id="notready-cards-container" class="notready-cards-scroll">
+          <!-- Dynamically populated or empty state -->
+        </div>
       </div>
     </div>
 

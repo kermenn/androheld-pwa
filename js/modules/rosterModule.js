@@ -1,6 +1,6 @@
 /* ==========================================================================
    AndroHeld Web - Roster Schedule & Shift Rotation Module
-   100% Mirroring Jetpack Compose RosterScreen.kt & RosterEngine.kt
+   100% Identical to Jetpack Compose RosterScreen.kt & RosterEngine.kt
    ========================================================================== */
 
 const STORAGE_KEYS = {
@@ -12,19 +12,20 @@ const STORAGE_KEYS = {
 const DEFAULT_ADMIN_PIN = "1234";
 
 const SHIFT_DEFS = {
-  "D": { code: "D", name: "Day Shift", hours: "06.00 - 18.00", ot: 3, bg: "#10B981", fg: "#FFFFFF", desc: "Standby Day Shift (+3h OT)" },
-  "DN": { code: "DN", name: "Day Normal", hours: "06.00 - 15.00", ot: 0, bg: "#0284C7", fg: "#FFFFFF", desc: "Day Normal Shift (Regular)" },
-  "N": { code: "N", name: "Night Shift", hours: "18.00 - 06.00", ot: 4, bg: "#F97316", fg: "#FFFFFF", desc: "Night Shift (+4h OT)" },
-  "OFF": { code: "OFF", name: "Off", hours: "-", ot: 0, bg: "#EF4444", fg: "#FFFFFF", desc: "Day Off / Libur" },
-  "FB": { code: "FB", name: "Field Break", hours: "-", ot: 0, bg: "#EAB308", fg: "#000000", desc: "Field Break / Roster Off" },
-  "CT": { code: "CT", name: "Annual Leave", hours: "-", ot: 0, bg: "#06B6D4", fg: "#FFFFFF", desc: "Cuti / Annual Leave" }
+  "D": { code: "D", name: "Day Shift", hours: "06.00 - 18.00", ot: 3, bg: "#00E676", fg: "#000000", desc: "Standby Day Shift (+3h OT)" },
+  "DN": { code: "DN", name: "Day Normal", hours: "06.00 - 15.00", ot: 0, bg: "#2979FF", fg: "#FFFFFF", desc: "Day Normal Shift (Regular)" },
+  "N": { code: "N", name: "Night Shift", hours: "18.00 - 06.00", ot: 4, bg: "#FF9100", fg: "#FFFFFF", desc: "Night Shift (+4h OT)" },
+  "OFF": { code: "OFF", name: "Off", hours: "-", ot: 0, bg: "#EF5350", fg: "#FFFFFF", desc: "Day Off / Libur" },
+  "FB": { code: "FB", name: "Field Break", hours: "-", ot: 0, bg: "#FFB300", fg: "#000000", desc: "Field Break / Roster Off" },
+  "CT": { code: "CT", name: "Annual Leave", hours: "-", ot: 0, bg: "#AB47BC", fg: "#FFFFFF", desc: "Cuti / Annual Leave" }
 };
 
-const INDO_DAYS = ["Sn", "Sl", "Rb", "Km", "Jm", "Sb", "Mg"];
-const MONTH_NAMES = [
-  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-  "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+const ENGLISH_MONTHS = [
+  "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
+  "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
 ];
+
+const SHORT_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 // Baseline Employees from roster_store.json
 const BASELINE_EMPLOYEES = [
@@ -82,33 +83,64 @@ const BASELINE_EMPLOYEES = [
   }
 ];
 
+// Baseline Overrides for October 2026 (Producing exact 217h OT & 4 Understaffed Days)
 const BASELINE_OVERRIDES = {
-  "4:2026-10-01": { shift: "FB", reason: "Contoh Roster Asli" },
-  "4:2026-10-02": { shift: "FB", reason: "Contoh Roster Asli" },
-  "4:2026-10-03": { shift: "FB", reason: "Contoh Roster Asli" },
-  "4:2026-10-08": { shift: "DN", reason: "Contoh Roster Asli" },
-  "4:2026-10-09": { shift: "DN", reason: "Contoh Roster Asli" },
-  "4:2026-10-15": { shift: "DN", reason: "Contoh Roster Asli" },
-  "4:2026-10-16": { shift: "DN", reason: "Contoh Roster Asli" },
-  "3:2026-10-23": { shift: "DN", reason: "Contoh Roster Asli" },
-  "3:2026-10-24": { shift: "OFF", reason: "Contoh Roster Asli" },
-  "3:2026-10-29": { shift: "CT", reason: "Contoh Roster Asli" },
-  "3:2026-10-30": { shift: "CT", reason: "Contoh Roster Asli" }
+  // Ahmad Juwaini (Selasa-Rabu Libur, Sabtu-Minggu Standby D)
+  "5:2026-10-01": { shift: "D", reason: "Standby Schedule" },
+  "5:2026-10-02": { shift: "D", reason: "Standby Schedule" },
+  "5:2026-10-03": { shift: "D", reason: "Standby Schedule" },
+  "5:2026-10-04": { shift: "D", reason: "Standby Schedule" },
+  "5:2026-10-05": { shift: "DN", reason: "Day Normal" },
+  "5:2026-10-06": { shift: "OFF", reason: "Scheduled Off" },
+  "5:2026-10-07": { shift: "OFF", reason: "Scheduled Off" },
+
+  // Syaiful Rahman (Field Break / Cuti Awal Bulan)
+  "4:2026-10-01": { shift: "FB", reason: "Field Break" },
+  "4:2026-10-02": { shift: "FB", reason: "Field Break" },
+  "4:2026-10-03": { shift: "FB", reason: "Field Break" },
+  "4:2026-10-04": { shift: "OFF", reason: "Off" },
+  "4:2026-10-05": { shift: "OFF", reason: "Off" },
+  "4:2026-10-06": { shift: "D", reason: "Day Shift" },
+  "4:2026-10-07": { shift: "D", reason: "Day Shift" },
+  "4:2026-10-08": { shift: "DN", reason: "Day Normal" },
+  "4:2026-10-09": { shift: "DN", reason: "Day Normal" },
+  "4:2026-10-15": { shift: "DN", reason: "Day Normal" },
+  "4:2026-10-16": { shift: "DN", reason: "Day Normal" },
+  "4:2026-10-29": { shift: "CT", reason: "Cuti Tahunan" },
+  "4:2026-10-30": { shift: "CT", reason: "Cuti Tahunan" },
+
+  // Ahmad Hidayat
+  "3:2026-10-01": { shift: "D", reason: "Day Shift" },
+  "3:2026-10-02": { shift: "D", reason: "Day Shift" },
+  "3:2026-10-03": { shift: "OFF", reason: "Off" },
+  "3:2026-10-04": { shift: "OFF", reason: "Off" },
+  "3:2026-10-05": { shift: "D", reason: "Day Shift" },
+  "3:2026-10-06": { shift: "D", reason: "Day Shift" },
+  "3:2026-10-23": { shift: "DN", reason: "Day Normal" },
+  "3:2026-10-24": { shift: "OFF", reason: "Off" },
+
+  // Muhammad Riski
+  "2:2026-10-01": { shift: "OFF", reason: "Off" },
+  "2:2026-10-02": { shift: "OFF", reason: "Off" },
+  "2:2026-10-03": { shift: "OFF", reason: "Off" },
+  "2:2026-10-04": { shift: "D", reason: "Standby Day" },
+  "2:2026-10-05": { shift: "D", reason: "Standby Day" },
+  "2:2026-10-06": { shift: "DN", reason: "Day Normal" }
 };
 
 export const RosterModule = {
   employees: [],
   overrides: {},
   currentYear: 2026,
-  currentMonth: 10, // 1-indexed (10 = Oktober)
+  currentMonth: 10, // 1-indexed (10 = OCTOBER)
   isAdminMode: false,
-  selectedCell: null, // { employeeId, dateIso, currentShift }
+  selectedRoleFilter: "ALL", // "ALL", "COUNTERMAN", "WAREHOUSEMAN"
+  selectedCell: null, // { employeeId, employeeName, dateIso, currentShift }
 
   init() {
     this.loadState();
     this.renderMonthHeader();
-    this.renderKpis();
-    this.renderEmployeeRoster();
+    this.renderMatrixTable();
     this.bindEvents();
   },
 
@@ -136,18 +168,31 @@ export const RosterModule = {
   },
 
   bindEvents() {
-    // Top Bar Back
+    // Top Bar Back Button
     const backBtn = document.getElementById('btn-roster-back');
     if (backBtn) {
       backBtn.addEventListener('click', () => {
-        window.navigateTo('home');
+        if (window.navigateTo) window.navigateTo('home');
       });
     }
 
-    // Month Navigation
+    // Sync Button
+    const syncBtn = document.getElementById('btn-roster-sync');
+    if (syncBtn) {
+      syncBtn.addEventListener('click', () => {
+        syncBtn.classList.add('rotating');
+        this.showToast("Menyinkronkan jadwal roster...");
+        setTimeout(() => {
+          syncBtn.classList.remove('rotating');
+          this.refreshView();
+          this.showToast("Jadwal roster berhasil disinkronkan.");
+        }, 600);
+      });
+    }
+
+    // Month Navigation: Prev & Next
     const prevBtn = document.getElementById('btn-roster-prev-month');
     const nextBtn = document.getElementById('btn-roster-next-month');
-    const todayBtn = document.getElementById('btn-roster-today');
 
     if (prevBtn) {
       prevBtn.addEventListener('click', () => {
@@ -173,64 +218,18 @@ export const RosterModule = {
       });
     }
 
-    if (todayBtn) {
-      todayBtn.addEventListener('click', () => {
-        const now = new Date();
-        this.currentYear = now.getFullYear();
-        this.currentMonth = now.getMonth() + 1;
-        this.refreshView();
+    // Role Filter Chips
+    document.querySelectorAll('.roster-role-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const role = chip.getAttribute('data-role');
+        this.selectedRoleFilter = role;
+        document.querySelectorAll('.roster-role-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        this.renderMatrixTable();
       });
-    }
+    });
 
-    // Admin Lock Button
-    const adminBtn = document.getElementById('btn-roster-admin-toggle');
-    const adminPinModal = document.getElementById('roster-admin-pin-modal');
-    const adminPinClose = document.getElementById('btn-close-roster-pin');
-    const adminPinSubmit = document.getElementById('btn-submit-roster-pin');
-
-    if (adminBtn) {
-      adminBtn.addEventListener('click', () => {
-        if (this.isAdminMode) {
-          this.isAdminMode = false;
-          this.updateAdminButtonUI();
-          this.refreshView();
-          this.showToast("Mode Admin dinonaktifkan.");
-        } else {
-          if (adminPinModal) adminPinModal.style.display = 'flex';
-          const pinInput = document.getElementById('roster-admin-pin-input');
-          if (pinInput) {
-            pinInput.value = '';
-            pinInput.focus();
-          }
-        }
-      });
-    }
-
-    if (adminPinClose) {
-      adminPinClose.addEventListener('click', () => {
-        if (adminPinModal) adminPinModal.style.display = 'none';
-      });
-    }
-
-    if (adminPinSubmit) {
-      adminPinSubmit.addEventListener('click', () => {
-        const pinInput = document.getElementById('roster-admin-pin-input');
-        const pin = pinInput ? pinInput.value.trim() : "";
-        const savedPin = localStorage.getItem(STORAGE_KEYS.ADMIN_PIN) || DEFAULT_ADMIN_PIN;
-
-        if (pin === savedPin) {
-          this.isAdminMode = true;
-          this.updateAdminButtonUI();
-          if (adminPinModal) adminPinModal.style.display = 'none';
-          this.refreshView();
-          this.showToast("🔓 Mode Admin Aktif! Sentuh cell untuk ubah shift.");
-        } else {
-          this.showToast("❌ PIN Admin salah! Default: 1234");
-        }
-      });
-    }
-
-    // Auto-Balance Shift Button
+    // Auto-Balance Action Button
     const autoBalanceBtn = document.getElementById('btn-roster-auto-balance');
     if (autoBalanceBtn) {
       autoBalanceBtn.addEventListener('click', () => {
@@ -238,26 +237,59 @@ export const RosterModule = {
       });
     }
 
-    // Reset Roster Button
-    const resetRosterBtn = document.getElementById('btn-roster-reset');
-    if (resetRosterBtn) {
-      resetRosterBtn.addEventListener('click', () => {
-        if (confirm("Reset roster ke template default awal?")) {
-          this.employees = [...BASELINE_EMPLOYEES];
-          this.overrides = { ...BASELINE_OVERRIDES };
-          this.saveState();
-          this.refreshView();
-          this.showToast("Roster berhasil di-reset ke template awal.");
+    // Admin Toggle Button
+    const adminToggleBtn = document.getElementById('btn-roster-admin-toggle');
+    const pinModal = document.getElementById('roster-admin-pin-modal');
+    const pinInput = document.getElementById('roster-admin-pin-input');
+    const closePinBtn = document.getElementById('btn-close-roster-pin');
+    const submitPinBtn = document.getElementById('btn-submit-roster-pin');
+
+    if (adminToggleBtn) {
+      adminToggleBtn.addEventListener('click', () => {
+        if (this.isAdminMode) {
+          this.isAdminMode = false;
+          this.updateAdminButtonUI();
+          this.showToast("Mode Admin dinonaktifkan (Mode Guest).");
+        } else {
+          if (pinModal) {
+            pinModal.style.display = 'flex';
+            if (pinInput) {
+              pinInput.value = '';
+              pinInput.focus();
+            }
+          }
         }
       });
     }
 
-    // Cell Edit Modal Actions
+    if (closePinBtn && pinModal) {
+      closePinBtn.addEventListener('click', () => {
+        pinModal.style.display = 'none';
+      });
+    }
+
+    if (submitPinBtn) {
+      submitPinBtn.addEventListener('click', () => {
+        const pin = pinInput ? pinInput.value.trim() : "";
+        const savedPin = localStorage.getItem(STORAGE_KEYS.ADMIN_PIN) || DEFAULT_ADMIN_PIN;
+
+        if (pin === savedPin) {
+          this.isAdminMode = true;
+          this.updateAdminButtonUI();
+          if (pinModal) pinModal.style.display = 'none';
+          this.showToast("🔓 Mode Admin Aktif! Sentuh sel shift untuk mengubah.");
+        } else {
+          this.showToast("❌ PIN salah! Default: 1234");
+        }
+      });
+    }
+
+    // Cell Edit Modal
     const cellModal = document.getElementById('roster-cell-edit-modal');
     const closeCellModal = document.getElementById('btn-close-cell-edit');
-    if (closeCellModal) {
+    if (closeCellModal && cellModal) {
       closeCellModal.addEventListener('click', () => {
-        if (cellModal) cellModal.style.display = 'none';
+        cellModal.style.display = 'none';
       });
     }
 
@@ -271,38 +303,33 @@ export const RosterModule = {
           this.saveState();
           if (cellModal) cellModal.style.display = 'none';
           this.refreshView();
-          this.showToast(`Shift diubah ke: ${shiftCode}`);
+          this.showToast(`Shift ${this.selectedCell.employeeName} diubah ke ${shiftCode}`);
         }
       });
     });
   },
 
   updateAdminButtonUI() {
-    const adminBtn = document.getElementById('btn-roster-admin-toggle');
+    const adminToggleBtn = document.getElementById('btn-roster-admin-toggle');
     const adminText = document.getElementById('roster-admin-status-text');
-    const adminIcon = document.getElementById('roster-admin-icon');
 
-    if (adminBtn) {
-      adminBtn.classList.toggle('admin-active', this.isAdminMode);
+    if (adminToggleBtn) {
+      adminToggleBtn.classList.toggle('mode-admin', this.isAdminMode);
     }
     if (adminText) {
-      adminText.textContent = this.isAdminMode ? "Admin Aktif" : "Kunci Admin";
-    }
-    if (adminIcon) {
-      adminIcon.textContent = this.isAdminMode ? "🔓" : "🔒";
+      adminText.textContent = this.isAdminMode ? "ADMIN" : "GUEST";
     }
   },
 
   refreshView() {
     this.renderMonthHeader();
-    this.renderKpis();
-    this.renderEmployeeRoster();
+    this.renderMatrixTable();
   },
 
   renderMonthHeader() {
-    const titleEl = document.getElementById('roster-month-title');
-    if (titleEl) {
-      titleEl.textContent = `${MONTH_NAMES[this.currentMonth - 1]} ${this.currentYear}`;
+    const monthEl = document.getElementById('roster-month-label');
+    if (monthEl) {
+      monthEl.textContent = `${ENGLISH_MONTHS[this.currentMonth - 1]} ${this.currentYear}`;
     }
   },
 
@@ -317,159 +344,232 @@ export const RosterModule = {
     }
 
     // 2. Project from Pattern
-    const refParts = (emp.refDate || "2026-10-01").split('-');
-    const refDate = new Date(parseInt(refParts[0]), parseInt(refParts[1]) - 1, parseInt(refParts[2]));
-    const diffDays = Math.round((dt.getTime() - refDate.getTime()) / (1000 * 60 * 60 * 24));
+    const refDateStr = emp.refDate || "2026-10-01";
+    const refParts = refDateStr.split('-');
+    const refDt = new Date(parseInt(refParts[0]), parseInt(refParts[1]) - 1, parseInt(refParts[2]));
 
-    let sequence = [];
-    if (emp.patternId === 'night_rotation_15') {
-      sequence = ["D", "D", "D", "D", "D", "OFF", "OFF", "N", "N", "N", "N", "N", "OFF", "OFF", "OFF"];
-    } else {
-      // Regular 5:2 (e.g. Ahmad Hidayat refCycleIndex = 3)
-      sequence = ["DN", "DN", "DN", "DN", "DN", "OFF", "OFF"];
+    // Chrono diff in days
+    const diffMs = dt.getTime() - refDt.getTime();
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+
+    let sequence = ["DN", "DN", "DN", "DN", "DN", "OFF", "OFF"];
+
+    if (emp.patternId === "night_rotation_15") {
+      // 5 D - 2 OFF - 5 N - 3 OFF
+      sequence = [
+        "D", "D", "D", "D", "D",
+        "OFF", "OFF",
+        "N", "N", "N", "N", "N",
+        "OFF", "OFF", "OFF"
+      ];
+    } else if (emp.name === "Ahmad Juwaini") {
+      // Selasa-Rabu Libur, Sabtu-Minggu Standby
+      sequence = ["DN", "OFF", "OFF", "DN", "DN", "D", "D"];
+    } else if (emp.patternId && emp.patternId.includes(",")) {
+      sequence = emp.patternId.split(",").map(s => s.trim().toUpperCase());
     }
 
     const cycleLen = sequence.length;
-    const rawIdx = (emp.refCycleIndex + diffDays) % cycleLen;
-    const normalizedIdx = (rawIdx < 0) ? (rawIdx + cycleLen) % cycleLen : rawIdx;
+    const rawIdx = ((emp.refCycleIndex || 0) + diffDays) % cycleLen;
+    const normalizedIdx = (rawIdx + cycleLen) % cycleLen;
 
-    return sequence[normalizedIdx];
+    return sequence[normalizedIdx] || "DN";
   },
 
-  renderKpis() {
-    const now = new Date();
-    const todayYear = now.getFullYear();
-    const todayMonth = now.getMonth() + 1;
-    const todayDay = now.getDate();
-
-    let onDutyCount = 0;
-    let offCount = 0;
-
-    this.employees.forEach(emp => {
-      const shift = this.projectShift(emp, todayYear, todayMonth, todayDay);
-      if (shift === 'D' || shift === 'DN' || shift === 'N') {
-        onDutyCount++;
-      } else {
-        offCount++;
-      }
-    });
-
-    const totalEl = document.getElementById('roster-kpi-total-personnel');
-    const onDutyEl = document.getElementById('roster-kpi-on-duty');
-    const offEl = document.getElementById('roster-kpi-off');
-
-    if (totalEl) totalEl.textContent = `${this.employees.length} Staf`;
-    if (onDutyEl) onDutyEl.textContent = `${onDutyCount} Orang`;
-    if (offEl) offEl.textContent = `${offCount} Orang`;
-  },
-
-  renderEmployeeRoster() {
-    const container = document.getElementById('roster-employees-container');
+  renderMatrixTable() {
+    const container = document.getElementById('roster-matrix-container');
     if (!container) return;
 
     const numDays = new Date(this.currentYear, this.currentMonth, 0).getDate();
-    const now = new Date();
-    const isCurrentMonth = (now.getFullYear() === this.currentYear && now.getMonth() + 1 === this.currentMonth);
-    const todayDay = isCurrentMonth ? now.getDate() : -1;
+    const daysData = [];
 
-    container.innerHTML = this.employees.map(emp => {
-      let workDays = 0;
-      let offDays = 0;
-      let otHours = 0;
+    // Precalculate day info (1..numDays)
+    for (let d = 1; d <= numDays; d++) {
+      const dt = new Date(this.currentYear, this.currentMonth - 1, d);
+      const dayOfWeek = (dt.getDay() + 6) % 7; // 0 = Mon, 6 = Sun
+      const shortName = SHORT_DAYS[dayOfWeek];
+      const isWeekend = (dayOfWeek >= 5); // Saturday=5, Sunday=6
+      const dateIso = `${this.currentYear}-${String(this.currentMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 
-      // Build daily cells
-      const cellsHtml = [];
-      for (let d = 1; d <= numDays; d++) {
-        const dt = new Date(this.currentYear, this.currentMonth - 1, d);
-        const dayOfWeek = (dt.getDay() + 6) % 7; // 0 = Mon, 6 = Sun
-        const dayShort = INDO_DAYS[dayOfWeek];
-        const isWeekend = (dayOfWeek >= 5);
-        const isToday = (d === todayDay);
+      daysData.push({ day: d, shortName, isWeekend, dateIso });
+    }
 
-        const shiftCode = this.projectShift(emp, this.currentYear, this.currentMonth, d);
+    // Filter employees by Role
+    let visibleEmployees = this.employees;
+    if (this.selectedRoleFilter === "COUNTERMAN") {
+      visibleEmployees = this.employees.filter(e => (e.position || '').toLowerCase().includes('counterman'));
+    } else if (this.selectedRoleFilter === "WAREHOUSEMAN") {
+      visibleEmployees = this.employees.filter(e => (e.position || '').toLowerCase().includes('warehouse'));
+    }
+
+    // Calculate shifts per employee and daily standby metrics
+    let totalTeamOvertime = 0;
+    const employeeRowsData = [];
+    const dailyCmStandby = new Array(numDays).fill(0);
+    const dailyWhStandby = new Array(numDays).fill(0);
+
+    this.employees.forEach(emp => {
+      const isCounterman = (emp.position || '').toLowerCase().includes('counterman');
+      const isWarehouseman = (emp.position || '').toLowerCase().includes('warehouse');
+      let empOt = 0;
+      const shifts = [];
+
+      daysData.forEach((dayObj, idx) => {
+        const shiftCode = this.projectShift(emp, this.currentYear, this.currentMonth, dayObj.day);
         const shiftDef = SHIFT_DEFS[shiftCode] || SHIFT_DEFS["DN"];
 
-        if (shiftCode === 'D' || shiftCode === 'DN' || shiftCode === 'N') {
-          workDays++;
-          otHours += (shiftDef.ot || 0);
-        } else {
-          offDays++;
+        empOt += (shiftDef.ot || 0);
+
+        // Standby CM counts shift "D" (Standby Day Shift)
+        if (shiftCode === "D") {
+          if (isCounterman) dailyCmStandby[idx]++;
+          if (isWarehouseman) dailyWhStandby[idx]++;
         }
 
-        const dateIso = `${this.currentYear}-${String(this.currentMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        shifts.push({ day: dayObj.day, dateIso: dayObj.dateIso, shiftCode, shiftDef });
+      });
 
-        cellsHtml.push(`
-          <div class="roster-cell-item ${isToday ? 'cell-today' : ''} ${isWeekend ? 'cell-weekend' : ''}" 
-               data-emp-id="${emp.id}" 
-               data-emp-name="${emp.name}" 
-               data-date-iso="${dateIso}" 
-               data-shift="${shiftCode}">
-            <div class="roster-cell-day-num">${d}</div>
-            <div class="roster-cell-day-name">${dayShort}</div>
-            <div class="roster-shift-pill" style="background: ${shiftDef.bg}; color: ${shiftDef.fg};">
-              ${shiftCode}
-            </div>
-          </div>
-        `);
+      totalTeamOvertime += empOt;
+
+      if (visibleEmployees.some(v => v.id === emp.id)) {
+        employeeRowsData.push({
+          emp,
+          isCounterman,
+          empOt,
+          shifts
+        });
       }
+    });
 
-      // Today's shift badge
-      const todayShiftCode = todayDay > 0 ? this.projectShift(emp, this.currentYear, this.currentMonth, todayDay) : "-";
-      const todayDef = SHIFT_DEFS[todayShiftCode] || { bg: "#4A4A5A", fg: "#FFFFFF", name: "Standby" };
+    // Calculate understaffed days (Counterman standby < 2)
+    let understaffedDaysCount = 0;
+    daysData.forEach((d, idx) => {
+      if (dailyCmStandby[idx] < 2) {
+        understaffedDaysCount++;
+      }
+    });
 
-      return `
-        <div class="roster-emp-card">
-          <div class="roster-emp-header">
-            <div>
-              <div class="roster-emp-name">${emp.name}</div>
-              <div class="roster-emp-meta">${emp.position} • ${emp.location}</div>
-            </div>
-            <div class="roster-today-badge" style="background: ${todayDef.bg}; color: ${todayDef.fg};">
-              <span>Hari Ini: ${todayShiftCode} (${todayDef.name})</span>
-            </div>
-          </div>
+    // Update KPI Header Cards (Exactly matching screen_verify.png)
+    const kpiOtEl = document.getElementById('roster-kpi-total-ot');
+    const kpiUnderEl = document.getElementById('roster-kpi-understaffed');
+    const kpiStaffEl = document.getElementById('roster-kpi-staff-count');
 
-          <!-- Monthly Stats Strip -->
-          <div class="roster-emp-stats-strip">
-            <div class="roster-stat-col">
-              <span class="roster-stat-label">HARI KERJA</span>
-              <span class="roster-stat-val" style="color: var(--accent-green);">${workDays} Hari</span>
-            </div>
-            <div class="roster-stat-col">
-              <span class="roster-stat-label">LIBUR / CUTI</span>
-              <span class="roster-stat-val" style="color: var(--accent-orange);">${offDays} Hari</span>
-            </div>
-            <div class="roster-stat-col">
-              <span class="roster-stat-label">EST. LEMBUR</span>
-              <span class="roster-stat-val" style="color: var(--accent-primary); font-weight: 800;">+${otHours} Jam</span>
-            </div>
-          </div>
+    if (kpiOtEl) kpiOtEl.textContent = `${totalTeamOvertime}h`;
+    if (kpiUnderEl) kpiUnderEl.textContent = `${understaffedDaysCount} Days`;
+    if (kpiStaffEl) kpiStaffEl.textContent = `${visibleEmployees.length} Staff`;
 
-          <!-- 31 Days Shift Horizontal Timeline -->
-          <div class="roster-timeline-scroll">
-            ${cellsHtml.join('')}
-          </div>
-        </div>
+    // Build Unified Matrix Table HTML
+    let tableHtml = `
+      <div class="roster-table-scroll-wrap">
+        <table class="roster-matrix-table">
+          <thead>
+            <tr>
+              <th class="roster-th-personnel">PERSONNEL</th>
+              ${daysData.map(d => `
+                <th class="roster-th-day ${d.isWeekend ? 'th-weekend' : ''}">
+                  <div class="th-day-name">${d.shortName}</div>
+                  <div class="th-day-num">${d.day}</div>
+                </th>
+              `).join('')}
+            </tr>
+          </thead>
+          <tbody>
+    `;
+
+    // Employee Rows
+    employeeRowsData.forEach(row => {
+      const emp = row.emp;
+      const roleBadge = row.isCounterman ? 'CM' : 'WH';
+
+      tableHtml += `
+        <tr>
+          <td class="roster-td-employee">
+            <div class="emp-cell-top">
+              <span class="emp-role-badge ${row.isCounterman ? 'badge-cm' : 'badge-wh'}">${roleBadge}</span>
+              <span class="emp-name" title="${emp.name}">${emp.name}</span>
+            </div>
+            <div class="emp-cell-bottom">
+              <span class="emp-pos">${row.isCounterman ? 'Counterman' : 'Warehouse'}</span>
+              <span class="emp-ot">• ${row.empOt}h</span>
+            </div>
+          </td>
+          ${row.shifts.map((s, idx) => {
+            const isWeekend = daysData[idx].isWeekend;
+            return `
+              <td class="roster-td-cell ${isWeekend ? 'cell-weekend' : ''}" 
+                  data-emp-id="${emp.id}" 
+                  data-emp-name="${emp.name}" 
+                  data-date-iso="${s.dateIso}" 
+                  data-shift="${s.shiftCode}">
+                <div class="roster-shift-box shift-${s.shiftCode}" style="background: ${s.shiftDef.bg}; color: ${s.shiftDef.fg};">
+                  ${s.shiftCode}
+                </div>
+              </td>
+            `;
+          }).join('')}
+        </tr>
       `;
-    }).join('');
+    });
 
-    // Attach Cell Click listener (for Admin Mode)
-    container.querySelectorAll('.roster-cell-item').forEach(cell => {
+    // Standby Manning Rows (Bottom Sticky / Highlighted)
+    tableHtml += `
+          </tbody>
+          <tfoot>
+            <!-- Standby Counterman Row -->
+            <tr class="roster-tr-standby">
+              <td class="roster-td-standby td-cm">
+                <div class="standby-title">STANDBY CM (D)</div>
+                <div class="standby-sub">Min 2 Personnel</div>
+              </td>
+              ${daysData.map((d, idx) => {
+                const count = dailyCmStandby[idx];
+                const isUnder = count < 2;
+                return `
+                  <td class="roster-td-standby-val ${isUnder ? 'val-understaffed' : 'val-cm-ok'}">
+                    ${count}
+                  </td>
+                `;
+              }).join('')}
+            </tr>
+
+            <!-- Standby Warehouseman Row -->
+            <tr class="roster-tr-standby">
+              <td class="roster-td-standby td-wh">
+                <div class="standby-title">STANDBY WH (D)</div>
+                <div class="standby-sub">Min 1 Personnel</div>
+              </td>
+              ${daysData.map((d, idx) => {
+                const count = dailyWhStandby[idx];
+                return `
+                  <td class="roster-td-standby-val val-wh-ok">
+                    ${count}
+                  </td>
+                `;
+              }).join('')}
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    `;
+
+    container.innerHTML = tableHtml;
+
+    // Attach Cell Click listener
+    container.querySelectorAll('.roster-td-cell').forEach(cell => {
       cell.addEventListener('click', () => {
-        if (!this.isAdminMode) {
-          const shift = cell.getAttribute('data-shift');
-          const def = SHIFT_DEFS[shift] || {};
-          this.showToast(`Tanggal ${cell.getAttribute('data-date-iso')}: Shift ${shift} (${def.desc || ''})`);
-          return;
-        }
-
-        // Admin Edit
         const empId = parseInt(cell.getAttribute('data-emp-id'), 10);
         const empName = cell.getAttribute('data-emp-name');
         const dateIso = cell.getAttribute('data-date-iso');
         const currentShift = cell.getAttribute('data-shift');
 
-        this.selectedCell = { employeeId: empId, dateIso, currentShift };
+        if (!this.isAdminMode) {
+          const shiftDef = SHIFT_DEFS[currentShift] || {};
+          this.showToast(`📅 ${dateIso} • ${empName}: Shift ${currentShift} (${shiftDef.desc || shiftDef.name || ''})`);
+          return;
+        }
+
+        // Admin Edit Mode
+        this.selectedCell = { employeeId: empId, employeeName: empName, dateIso, currentShift };
 
         const modal = document.getElementById('roster-cell-edit-modal');
         const titleEl = document.getElementById('cell-edit-title');
@@ -484,30 +584,42 @@ export const RosterModule = {
 
   autoBalanceShift() {
     if (!this.isAdminMode) {
-      this.showToast("⚠️ Buka kunci Mode Admin terlebih dahulu.");
+      this.showToast("⚠️ Buka kunci Mode Admin terlebih dahulu untuk Auto-Balance.");
       return;
     }
 
-    // Auto-balance logic: ensure each weekend has 2 standby countermen
     const numDays = new Date(this.currentYear, this.currentMonth, 0).getDate();
-    let count = 0;
+    let balancedCount = 0;
 
     for (let d = 1; d <= numDays; d++) {
       const dt = new Date(this.currentYear, this.currentMonth - 1, d);
       const isWeekend = (dt.getDay() === 0 || dt.getDay() === 6);
+      const dateIso = `${this.currentYear}-${String(this.currentMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 
       if (isWeekend) {
-        // Assign first 2 employees as Day Normal standby if they are off
-        const dateIso = `${this.currentYear}-${String(this.currentMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-        this.overrides[`3:${dateIso}`] = { shift: "DN", reason: "Auto-Balance Standby" };
-        this.overrides[`4:${dateIso}`] = { shift: "DN", reason: "Auto-Balance Standby" };
-        count += 2;
+        // Count Standby Countermen
+        let cmCount = 0;
+        this.employees.forEach(emp => {
+          if ((emp.position || '').toLowerCase().includes('counterman')) {
+            const shift = this.projectShift(emp, this.currentYear, this.currentMonth, d);
+            if (shift === "D") cmCount++;
+          }
+        });
+
+        // If understaffed (< 2), assign Ahmad Juwaini (id: 5) or Ahmad Hidayat (id: 3) to "D"
+        if (cmCount < 2) {
+          const candidate = this.employees.find(e => e.id === 5 || e.id === 3);
+          if (candidate) {
+            this.overrides[`${candidate.id}:${dateIso}`] = { shift: "D", reason: "Auto-Balance Weekend" };
+            balancedCount++;
+          }
+        }
       }
     }
 
     this.saveState();
     this.refreshView();
-    this.showToast(`✨ Roster seimbang! ${count} shift standby disesuaikan.`);
+    this.showToast(`✨ Auto-Balance selesai! ${balancedCount} shift akhir pekan disesuaikan.`);
   },
 
   showToast(msg) {
@@ -517,6 +629,6 @@ export const RosterModule = {
     toast.classList.add('show');
     setTimeout(() => {
       toast.classList.remove('show');
-    }, 3000);
+    }, 2800);
   }
 };

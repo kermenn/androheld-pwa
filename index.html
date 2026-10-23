@@ -17,9 +17,9 @@
   <link rel="icon" type="image/png" href="./assets/icon.png">
 
   <!-- Stylesheets with Cache Buster -->
-  <link rel="stylesheet" href="./css/tokens.css?v=12">
-  <link rel="stylesheet" href="./css/components.css?v=12">
-  <link rel="stylesheet" href="./css/app.css?v=12">
+  <link rel="stylesheet" href="./css/tokens.css?v=14">
+  <link rel="stylesheet" href="./css/components.css?v=14">
+  <link rel="stylesheet" href="./css/app.css?v=14">
 
   <!-- Offline Camera Barcode & QR Scanner Library -->
   <script src="./js/lib/html5-qrcode.min.js"></script>
@@ -1242,7 +1242,7 @@
     <!-- SCREEN: ROSTER SCHEDULE (SHIFT ROTATION)    -->
     <!-- ========================================== -->
     <section id="screen-roster" class="view-screen">
-      <!-- Top Bar -->
+      <!-- Top Bar matching Native Compose -->
       <header class="top-bar">
         <button id="btn-roster-back" class="icon-btn" title="Kembali ke Beranda">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1250,66 +1250,82 @@
           </svg>
         </button>
         <div class="top-bar-title">ROSTER SCHEDULE</div>
-        <button id="btn-roster-admin-toggle" class="roster-admin-toggle-btn" title="Buka Mode Admin untuk Ubah Shift">
-          <span id="roster-admin-icon">🔒</span>
-          <span id="roster-admin-status-text">Kunci Admin</span>
-        </button>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <!-- Sync / Refresh Button -->
+          <button id="btn-roster-sync" class="icon-btn" title="Sinkronkan Jadwal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00E676" stroke-width="2.2">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+            </svg>
+          </button>
+          <!-- Guest / Admin Badge Toggle -->
+          <button id="btn-roster-admin-toggle" class="roster-admin-badge-btn" title="Buka Mode Admin untuk Ubah Shift">
+            <svg id="roster-admin-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <span id="roster-admin-status-text">GUEST</span>
+          </button>
+        </div>
       </header>
 
-      <div class="screen-content roster-content">
-        <!-- Month Navigation Switcher -->
-        <div class="roster-month-nav">
-          <button id="btn-roster-prev-month" class="roster-nav-arrow" title="Bulan Sebelumnya">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
-          </button>
-          <div class="roster-month-display">
-            <div id="roster-month-label" class="roster-month-title">Oktober 2026</div>
-            <div class="roster-month-sub">Rotasi 5:2 & Night Shift Otomatis</div>
+      <div class="screen-content roster-screen-body">
+        <!-- Month Navigation Header (< OCTOBER 2026 > and AUTO BALANCE) -->
+        <div class="roster-sub-header">
+          <div class="roster-month-selector">
+            <button id="btn-roster-prev-month" class="roster-chevron-btn" title="Bulan Sebelumnya">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00E676" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <div id="roster-month-label" class="roster-month-text">OCTOBER 2026</div>
+            <button id="btn-roster-next-month" class="roster-chevron-btn" title="Bulan Berikutnya">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00E676" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
           </div>
-          <button id="btn-roster-next-month" class="roster-nav-arrow" title="Bulan Berikutnya">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          </button>
-          <button id="btn-roster-today" class="roster-today-btn" type="button">Bulan Ini</button>
-        </div>
-
-        <!-- 3-Column Today Summary KPI Strip -->
-        <div class="roster-kpi-strip">
-          <div class="roster-kpi-item">
-            <div class="roster-kpi-num" id="roster-kpi-total-personnel">4 Staf</div>
-            <div class="roster-kpi-label">Total Personel</div>
-          </div>
-          <div class="roster-kpi-item">
-            <div class="roster-kpi-num" id="roster-kpi-on-duty" style="color: var(--accent-green);">0 Orang</div>
-            <div class="roster-kpi-label">Hari Ini Dinas</div>
-          </div>
-          <div class="roster-kpi-item">
-            <div class="roster-kpi-num" id="roster-kpi-off" style="color: var(--accent-orange);">0 Orang</div>
-            <div class="roster-kpi-label">Hari Ini Libur</div>
-          </div>
-        </div>
-
-        <!-- Shift Color Legend Strip -->
-        <div class="roster-legend-bar">
-          <span class="roster-legend-pill pill-dn">DN (07-17)</span>
-          <span class="roster-legend-pill pill-d">D (Day)</span>
-          <span class="roster-legend-pill pill-n">N (19-05)</span>
-          <span class="roster-legend-pill pill-off">OFF</span>
-          <span class="roster-legend-pill pill-fb">FB</span>
-          <span class="roster-legend-pill pill-ct">CT</span>
-        </div>
-
-        <!-- Admin Toolbar Actions -->
-        <div class="roster-action-bar">
-          <button id="btn-roster-auto-balance" class="roster-balance-btn" type="button">
-            <span>⚡ Auto-Balance Weekend (2 Standby)</span>
-          </button>
-          <button id="btn-roster-reset" class="roster-reset-btn" type="button" title="Reset Roster">
-            <span>↺ Reset</span>
+          <button id="btn-roster-auto-balance" class="roster-auto-balance-pill" type="button">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00B0FF" stroke-width="2.2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+            <span>AUTO BALANCE</span>
           </button>
         </div>
 
-        <!-- Employees List Container -->
-        <div id="roster-employees-container" class="roster-employees-container"></div>
+        <!-- Glowing Neon Green Divider Line -->
+        <div class="roster-neon-line"></div>
+
+        <!-- 3 KPI Cards: TEAM OT, UNDERSTAFFED, PERSONNEL -->
+        <div class="roster-kpi-3row">
+          <div class="roster-kpi-native-card card-ot">
+            <div class="roster-kpi-card-header">
+              <span class="roster-kpi-card-title">TEAM OT</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#00E676" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+            <div id="roster-kpi-total-ot" class="roster-kpi-card-val val-green">217h</div>
+          </div>
+          <div class="roster-kpi-native-card card-understaffed">
+            <div class="roster-kpi-card-header">
+              <span class="roster-kpi-card-title">UNDERSTAFFED</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#EF5350" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </div>
+            <div id="roster-kpi-understaffed" class="roster-kpi-card-val val-red">4 Days</div>
+          </div>
+          <div class="roster-kpi-native-card card-personnel">
+            <div class="roster-kpi-card-header">
+              <span class="roster-kpi-card-title">PERSONNEL</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#00B0FF" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <div id="roster-kpi-staff-count" class="roster-kpi-card-val val-cyan">4 Staff</div>
+          </div>
+        </div>
+
+        <!-- Role Filter Chips: ALL, COUNTERMAN, WAREHOUSEMAN -->
+        <div class="roster-roles-row">
+          <span class="roster-roles-label">Role:</span>
+          <button class="roster-role-chip active" data-role="ALL">ALL</button>
+          <button class="roster-role-chip" data-role="COUNTERMAN">COUNTERMAN</button>
+          <button class="roster-role-chip" data-role="WAREHOUSEMAN">WAREHOUSEMAN</button>
+        </div>
+
+        <!-- Full Matrix Grid Container with Sticky Personnel Column -->
+        <div id="roster-matrix-container" class="roster-matrix-wrapper">
+          <!-- Dynamically generated unified table -->
+        </div>
       </div>
     </section>
 
@@ -1810,7 +1826,7 @@
 
       // Register PWA Service Worker with auto-update
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js?v=13').then((reg) => {
+        navigator.serviceWorker.register('./sw.js?v=14').then((reg) => {
           reg.update();
         }).catch((err) => {
           console.warn('SW registration failed:', err);

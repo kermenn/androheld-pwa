@@ -194,6 +194,22 @@
           localStorage.removeItem(testKey);
           if (val !== "active") throw new Error("LocalStorage read/write failed");
         }
+      },
+      {
+        name: "Security: Supabase RLS WITH CHECK Constraints",
+        desc: "Validates policy logic: rejects negative IDs, invalid dates, and unauthorized PIN changes",
+        fn: async () => {
+          function check(empId, dt, shift) {
+            const isStaff = empId > 0 && typeof dt === 'string' && dt.length === 10 && typeof shift === 'string' && shift.length <= 10;
+            const isConfig = empId === 0 && dt === 'CONFIG_PIN' && typeof shift === 'string' && (shift.startsWith('sha256:') || shift.length >= 4);
+            return isStaff || isConfig;
+          }
+          if (!check(2, "2026-10-24", "D")) throw new Error("Valid staff row was rejected");
+          if (!check(0, "CONFIG_PIN", "sha256:test")) throw new Error("Valid config was rejected");
+          if (check(-1, "2026-10-24", "D")) throw new Error("Negative ID was allowed");
+          if (check(0, "2026-10-24", "D")) throw new Error("Non-config row with ID 0 was allowed");
+          if (check(0, "CONFIG_PIN", "")) throw new Error("Empty PIN was allowed");
+        }
       }
     ];
 

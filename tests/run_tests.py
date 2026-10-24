@@ -125,6 +125,22 @@ def run_tests():
         print(" [FAIL] Test 6: Supabase CONFIG_PIN isolation failed")
         failed += 1
 
+    # -------------------------------------------------------------
+    # Test 7: Verify Supabase RLS Migration Script Integrity
+    # -------------------------------------------------------------
+    sql_path = os.path.join(base_dir, "data", "supabase_roster_security.sql")
+    try:
+        with open(sql_path, "r", encoding="utf-8") as f:
+            sql_content = f.read()
+        assert "ENABLE ROW LEVEL SECURITY" in sql_content, "Missing ENABLE ROW LEVEL SECURITY in SQL"
+        assert "Public Manage Overrides Secure" in sql_content, "Missing secure policy definition"
+        assert "CONFIG_PIN" in sql_content, "Missing CONFIG_PIN protection"
+        print(" [PASS] Test 7: Supabase RLS SQL security migration script verified")
+        passed += 1
+    except Exception as e:
+        print(f" [FAIL] Test 7: SQL security migration script check failed: {e}")
+        failed += 1
+
     print("-" * 65)
     print(f"Test Summary: {passed} PASSED, {failed} FAILED (Total: {passed + failed})")
     print("=" * 65)

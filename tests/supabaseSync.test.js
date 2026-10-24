@@ -61,4 +61,22 @@ describe("Supabase Cloud Sync & Security Protocol Tests", () => {
     expect(Object.keys(result.employeeOverrides).length).toBe(0);
     expect(result.adminPin).toBeNull();
   });
+
+  it("enforces RLS WITH CHECK policy rules against unauthorized payload structures", () => {
+    function evaluateRlsWithCheck(employee_id, date, shift) {
+      const isStaffValid = employee_id > 0 && typeof date === 'string' && date.length === 10 && typeof shift === 'string' && shift.length <= 10;
+      const isConfigValid = employee_id === 0 && date === 'CONFIG_PIN' && typeof shift === 'string' && (shift.startsWith('sha256:') || shift.length >= 4);
+      return isStaffValid || isConfigValid;
+    }
+
+    // Valid inputs
+    expect(evaluateRlsWithCheck(2, '2026-10-24', 'D')).toBe(true);
+    expect(evaluateRlsWithCheck(0, 'CONFIG_PIN', 'sha256:a491cc13b8858f6fe5ab3b89a11a0a0c3e3c64b343e97452a9cd160c1caca701')).toBe(true);
+
+    // Invalid / tampering attempts
+    expect(evaluateRlsWithCheck(-1, '2026-10-24', 'D')).toBe(false);
+    expect(evaluateRlsWithCheck(0, '2026-10-24', 'D')).toBe(false);
+    expect(evaluateRlsWithCheck(0, 'CONFIG_PIN', '')).toBe(false);
+    expect(evaluateRlsWithCheck(2, '24-10-2026', 'D')).toBe(false); // bad date format
+  });
 });

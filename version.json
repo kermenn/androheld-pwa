@@ -1,0 +1,7 @@
+{
+  "versionCode": 62,
+  "versionName": "5.2.0",
+  "apkUrl": "https://github.com/kermenn/AndroHeld/releases/download/v5.2.0/app-release.apk",
+  "releaseNotes": "1. Keamanan PIN Admin Roster dengan enkripsi SHA-256 + Salt.\n2. Pengamanan database Supabase dengan Row Level Security (RLS).\n3. Penyatuan menu Global Settings terpusat dengan UI/UX Modern Glassmorphism.\n4. Sistem pembaruan aplikasi langsung terhubung ke GitHub Releases.",
+  "date": "2026-10-24"
+}

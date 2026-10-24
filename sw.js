@@ -1,4 +1,4 @@
-const CACHE_NAME = 'androheld-pwa-v16';
+const CACHE_NAME = 'androheld-pwa-v17';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

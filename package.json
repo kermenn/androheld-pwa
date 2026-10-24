@@ -1,0 +1,24 @@
+{
+  "name": "androheld-web",
+  "version": "5.2.0",
+  "description": "AndroHeld Web PWA - Warehouse & Counterman Operations Platform",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:browser": "python tests/run_tests.py"
+  },
+  "devDependencies": {
+    "vitest": "^1.6.0"
+  },
+  "keywords": [
+    "pwa",
+    "androheld",
+    "warehouse",
+    "roster",
+    "inventory"
+  ],
+  "author": "AndroHeld Team",
+  "license": "UNLICENSED"
+}

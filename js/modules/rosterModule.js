@@ -13,7 +13,30 @@ const STORAGE_KEYS = {
   LAST_SYNC: "androheld_roster_last_sync"
 };
 
-const DEFAULT_ADMIN_PIN = "1234";
+export const PIN_SALT = "androheld_roster_secure_salt_2026";
+// Fallback hash for default PIN "1234"
+const DEFAULT_ADMIN_PIN = "sha256:2102f0d9ec5696c167b68056c4cb4c04f991f896f9f79dbb7e76ba46c7e6b625";
+
+export async function hashAdminPin(plainPin) {
+  const clean = (plainPin || "").trim();
+  const msgBuffer = new TextEncoder().encode(PIN_SALT + clean);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  return `sha256:${hashHex}`;
+}
+
+export async function verifyAdminPin(enteredPin, storedPin) {
+  const clean = (enteredPin || "").trim();
+  const stored = (storedPin || "").trim();
+  if (!clean || !stored) return false;
+  if (stored.startsWith("sha256:")) {
+    const hashed = await hashAdminPin(clean);
+    return hashed === stored;
+  }
+  // Graceful fallback for legacy plain text PIN during transition
+  return clean === stored;
+}
 
 const SHIFT_DEFS = {
   "D": { code: "D", name: "Day Shift", hours: "06.00 - 18.00", ot: 3, bg: "#00E676", fg: "#000000", desc: "Standby Day Shift (+3h OT)" },
@@ -292,10 +315,13 @@ export const RosterModule = {
         'Prefer': 'resolution=merge-duplicates'
       };
 
+      // Hash the PIN before storing or sending if not already hashed
+      const hashedPin = newPin.startsWith("sha256:") ? newPin : await hashAdminPin(newPin);
+
       const body = JSON.stringify([{
         employee_id: 0,
         date: 'CONFIG_PIN',
-        shift: newPin,
+        shift: hashedPin,
         reason: 'ADMIN_PIN'
       }]);
 
@@ -309,7 +335,7 @@ export const RosterModule = {
       if (!res.ok) {
         throw new Error(`Gagal menyimpan PIN ke Supabase (${res.status})`);
       }
-      localStorage.setItem(STORAGE_KEYS.ADMIN_PIN, newPin);
+      localStorage.setItem(STORAGE_KEYS.ADMIN_PIN, hashedPin);
     } catch (err) {
       console.warn("Push admin PIN to Supabase error:", err);
       throw err;
@@ -412,15 +438,23 @@ export const RosterModule = {
     }
 
     if (submitPinBtn) {
-      submitPinBtn.addEventListener('click', () => {
+      submitPinBtn.addEventListener('click', async () => {
         const pin = pinInput ? pinInput.value.trim() : "";
         const savedPin = localStorage.getItem(STORAGE_KEYS.ADMIN_PIN) || DEFAULT_ADMIN_PIN;
 
-        if (pin === savedPin) {
+        const isValid = await verifyAdminPin(pin, savedPin);
+        if (isValid) {
           this.isAdminMode = true;
           this.updateAdminButtonUI();
           if (pinModal) pinModal.style.display = 'none';
           this.showToast("🔓 Mode Admin Aktif! Sentuh sel shift untuk mengubah.");
+
+          // If current local PIN was stored in plain text, auto-migrate to hashed format
+          if (!savedPin.startsWith("sha256:")) {
+            const hashed = await hashAdminPin(pin);
+            localStorage.setItem(STORAGE_KEYS.ADMIN_PIN, hashed);
+            this.pushAdminPinToSupabase(hashed).catch(() => {});
+          }
         } else {
           this.showToast("❌ PIN salah!");
         }
@@ -491,7 +525,8 @@ export const RosterModule = {
         const confirmPin = confirmPinInput ? confirmPinInput.value.trim() : '';
         const savedPin = localStorage.getItem(STORAGE_KEYS.ADMIN_PIN) || DEFAULT_ADMIN_PIN;
 
-        if (oldPin !== savedPin) {
+        const isOldPinValid = await verifyAdminPin(oldPin, savedPin);
+        if (!isOldPinValid) {
           if (changePinError) {
             changePinError.innerText = 'PIN Lama salah!';
             changePinError.style.display = 'block';
@@ -519,9 +554,10 @@ export const RosterModule = {
         submitChangePinBtn.innerText = 'Menyimpan...';
 
         try {
-          await this.pushAdminPinToSupabase(newPin);
+          const hashedNewPin = await hashAdminPin(newPin);
+          await this.pushAdminPinToSupabase(hashedNewPin);
           if (changePinModal) changePinModal.style.display = 'none';
-          this.showToast('✅ PIN Admin berhasil diubah dan tersinkron ke Cloud Database!');
+          this.showToast('✅ PIN Admin berhasil diubah (Tersimpan aman dengan SHA-256 Salt)!');
         } catch (err) {
           if (changePinError) {
             changePinError.innerText = 'Gagal menyimpan ke Cloud: ' + err.message;

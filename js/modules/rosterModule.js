@@ -223,7 +223,9 @@ export const RosterModule = {
         if (Array.isArray(ovList)) {
           const cloudOverrides = {};
           ovList.forEach(item => {
-            if (item.employee_id && item.date) {
+            if (item.employee_id === 0 && item.date === 'CONFIG_PIN' && item.shift) {
+              localStorage.setItem(STORAGE_KEYS.ADMIN_PIN, item.shift);
+            } else if (item.employee_id && item.date) {
               cloudOverrides[`${item.employee_id}:${item.date}`] = {
                 shift: item.shift,
                 reason: item.reason || 'Supabase Sync'
@@ -280,6 +282,37 @@ export const RosterModule = {
       }
     } catch (err) {
       console.warn("Push override to Supabase error:", err);
+    }
+  },
+
+  async pushAdminPinToSupabase(newPin) {
+    try {
+      const headers = {
+        ...getSupabaseHeaders(),
+        'Prefer': 'resolution=merge-duplicates'
+      };
+
+      const body = JSON.stringify([{
+        employee_id: 0,
+        date: 'CONFIG_PIN',
+        shift: newPin,
+        reason: 'ADMIN_PIN'
+      }]);
+
+      const url = `${CONFIG.SUPABASE_URL}/rest/v1/roster_overrides?on_conflict=employee_id,date`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers,
+        body
+      });
+
+      if (!res.ok) {
+        throw new Error(`Gagal menyimpan PIN ke Supabase (${res.status})`);
+      }
+      localStorage.setItem(STORAGE_KEYS.ADMIN_PIN, newPin);
+    } catch (err) {
+      console.warn("Push admin PIN to Supabase error:", err);
+      throw err;
     }
   },
 
@@ -383,13 +416,13 @@ export const RosterModule = {
         const pin = pinInput ? pinInput.value.trim() : "";
         const savedPin = localStorage.getItem(STORAGE_KEYS.ADMIN_PIN) || DEFAULT_ADMIN_PIN;
 
-        if (pin === savedPin || pin === "admin123" || pin === "1234" || pin === "Trikindi##09") {
+        if (pin === savedPin) {
           this.isAdminMode = true;
           this.updateAdminButtonUI();
           if (pinModal) pinModal.style.display = 'none';
           this.showToast("🔓 Mode Admin Aktif! Sentuh sel shift untuk mengubah.");
         } else {
-          this.showToast("❌ PIN salah! Default: 1234");
+          this.showToast("❌ PIN salah!");
         }
       });
     }
@@ -420,6 +453,86 @@ export const RosterModule = {
         }
       });
     });
+
+    // Change Admin PIN Modal & Events
+    const changePinBtn = document.getElementById('btn-roster-change-pin');
+    const changePinModal = document.getElementById('roster-change-pin-modal');
+    const cancelChangePinBtn = document.getElementById('btn-cancel-roster-change-pin');
+    const submitChangePinBtn = document.getElementById('btn-submit-roster-change-pin');
+    const oldPinInput = document.getElementById('roster-old-pin-input');
+    const newPinInput = document.getElementById('roster-new-pin-input');
+    const confirmPinInput = document.getElementById('roster-confirm-pin-input');
+    const changePinError = document.getElementById('roster-change-pin-error');
+
+    if (changePinBtn && changePinModal) {
+      changePinBtn.addEventListener('click', () => {
+        if (oldPinInput) oldPinInput.value = '';
+        if (newPinInput) newPinInput.value = '';
+        if (confirmPinInput) confirmPinInput.value = '';
+        if (changePinError) {
+          changePinError.innerText = '';
+          changePinError.style.display = 'none';
+        }
+        changePinModal.style.display = 'flex';
+        if (oldPinInput) oldPinInput.focus();
+      });
+    }
+
+    if (cancelChangePinBtn && changePinModal) {
+      cancelChangePinBtn.addEventListener('click', () => {
+        changePinModal.style.display = 'none';
+      });
+    }
+
+    if (submitChangePinBtn) {
+      submitChangePinBtn.addEventListener('click', async () => {
+        const oldPin = oldPinInput ? oldPinInput.value.trim() : '';
+        const newPin = newPinInput ? newPinInput.value.trim() : '';
+        const confirmPin = confirmPinInput ? confirmPinInput.value.trim() : '';
+        const savedPin = localStorage.getItem(STORAGE_KEYS.ADMIN_PIN) || DEFAULT_ADMIN_PIN;
+
+        if (oldPin !== savedPin) {
+          if (changePinError) {
+            changePinError.innerText = 'PIN Lama salah!';
+            changePinError.style.display = 'block';
+          }
+          return;
+        }
+
+        if (newPin.length < 4) {
+          if (changePinError) {
+            changePinError.innerText = 'PIN Baru minimal 4 digit angka!';
+            changePinError.style.display = 'block';
+          }
+          return;
+        }
+
+        if (newPin !== confirmPin) {
+          if (changePinError) {
+            changePinError.innerText = 'Konfirmasi PIN Baru tidak cocok!';
+            changePinError.style.display = 'block';
+          }
+          return;
+        }
+
+        submitChangePinBtn.disabled = true;
+        submitChangePinBtn.innerText = 'Menyimpan...';
+
+        try {
+          await this.pushAdminPinToSupabase(newPin);
+          if (changePinModal) changePinModal.style.display = 'none';
+          this.showToast('✅ PIN Admin berhasil diubah dan tersinkron ke Cloud Database!');
+        } catch (err) {
+          if (changePinError) {
+            changePinError.innerText = 'Gagal menyimpan ke Cloud: ' + err.message;
+            changePinError.style.display = 'block';
+          }
+        } finally {
+          submitChangePinBtn.disabled = false;
+          submitChangePinBtn.innerText = 'Simpan';
+        }
+      });
+    }
   },
 
   updateAdminButtonUI() {
@@ -431,6 +544,11 @@ export const RosterModule = {
     }
     if (adminText) {
       adminText.textContent = this.isAdminMode ? "ADMIN" : "GUEST";
+    }
+
+    const changePinBtn = document.getElementById('btn-roster-change-pin');
+    if (changePinBtn) {
+      changePinBtn.style.display = this.isAdminMode ? 'flex' : 'none';
     }
   },
 
